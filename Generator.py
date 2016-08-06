@@ -3,11 +3,11 @@ import numpy as np
 import scipy.sparse as sparse
 
 # Size configuration
-n = 50	    # Case Number
-p = 100	    # Feature
-k = 2       # Number of Group
+n = 100	    # Case Number
+p = 10000	# Feature
+k = 5       # Number of Group
 h = 0.2     # Impact of Group
-dense = 0.2 # density
+dense = 0.3 # density
 
 config = np.array([n,p,k,h])
 np.set_printoptions(precision=4,
@@ -52,11 +52,6 @@ np.savetxt("./Data/smalldata/X.csv", X, '%5.2f', delimiter=",")
 np.savetxt("./Data/smalldata/G.csv", G, '%5.2f', delimiter=",")
 np.savetxt("./Data/smalldata/B.csv", B, '%5.2f', delimiter=",")
 print "File saving done"
-
-
-
-
-
 
 
 
