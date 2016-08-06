@@ -3,16 +3,21 @@ import numpy as np
 import scipy.sparse as sparse
 
 # Size configuration
-n = 500     # Case Number
-p = 10000   # Feature
-k = 5       # Number of Group
-h = 0.4     # Impact of Group
+n = 50	    # Case Number
+p = 100	    # Feature
+k = 2       # Number of Group
+h = 0.2     # Impact of Group
+dense = 0.2 # density
+
 config = np.array([n,p,k,h])
+np.set_printoptions(precision=4,
+                       threshold=10000,
+                       linewidth=150)
 
 # generate a random X matrix
 X = np.random.random((n,p))     # X is a n x p matrix with the value from 0 to
 X = np.around(X, decimals=2)
-B = sparse.random(p, 1, density=0.1)    # B is random sparse vector
+B = sparse.random(p, 1, density=dense)    # B is random sparse vector
 B = B.A
 B = np.around(B, decimals=2)
 Y_1 = X.dot(B)
@@ -38,16 +43,14 @@ G = clf.labels_
 Y = Y_1 * [[1-h]] + Y_2 * [[h]]
 Y = np.around(Y, decimals=2)
 
-
 print Y.shape
 
 print "Start save txt"
-np.savez("./Data/LMM0706/1", config, X, B, Y, G)
-np.savetxt("./Data/LMM0706/Y.csv", Y, delimiter=",")
-np.savetxt("./Data/LMM0706/X.csv", X, delimiter=",")
-np.savetxt("./Data/LMM0706/G.csv", G, delimiter=",")
-np.savetxt("./Data/LMM0706/B.csv", B, delimiter=",")
-np.savetxt("./Data/LMM0706/config.csv", config, delimiter=",")
+np.savez("./Data/smalldata/data", config, X, B, Y, G)
+np.savetxt("./Data/smalldata/Y.csv", Y, '%5.2f', delimiter=",")
+np.savetxt("./Data/smalldata/X.csv", X, '%5.2f', delimiter=",")
+np.savetxt("./Data/smalldata/G.csv", G, '%5.2f', delimiter=",")
+np.savetxt("./Data/smalldata/B.csv", B, '%5.2f', delimiter=",")
 print "File saving done"
 
 

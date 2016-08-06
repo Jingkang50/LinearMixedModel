@@ -131,7 +131,7 @@ def GWAS(Y, X, K, Kva=[], Kve=[], X0=None, REML=True, refit=False):
             keep = True - v
             xs = x[keep,:]
             if xs.var() == 0:
-               B.append(np.nan)
+               beta = np.nan
                continue
 
             Ys = Y[keep]
@@ -142,19 +142,17 @@ def GWAS(Y, X, K, Kva=[], Kve=[], X0=None, REML=True, refit=False):
                Ls.fit(X=xs)
             else:
                Ls.fit()
-	  beta = Ls.association(xs,REML=REML,returnBeta=True)[1]
-	  else:
-	    if x.var() == 0:
-	        B.append(np.nan)
-	        continue
+            beta = Ls.association(xs,REML=REML,returnBeta=True)[2]
+         else:
+            if x.var() == 0:
+               beta = np.nan
+               continue
+            if refit:
+               L.fit(X=x)
+            beta = L.association(x,REML=REML,returnBeta=True)[2]
 
-	    if refit:
-            L.fit(X=x)
-	    beta = L.association(x,REML=REML,returnBeta=True)[2]
-	    
-	    B.append(beta)
-
-    return B
+         B.append(beta)
+      return B
 
 class LMM:
 
