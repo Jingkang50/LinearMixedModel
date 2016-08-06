@@ -1,0 +1,6 @@
+# Size configuration
+n = 100	    # Case Number
+p = 10000	# Feature
+k = 5       # Number of Group
+h = 0.2     # Impact of Group
+dense = 0.3 # density
