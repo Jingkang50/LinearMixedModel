@@ -267,8 +267,8 @@ class LMM:
 
       if X == None: X = self.X0t
       elif stack: 
-	 self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
-	 X = self.X0t_stack
+         self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
+         X = self.X0t_stack
 
       n = float(self.N)
       q = float(X.shape[1])
@@ -277,8 +277,8 @@ class LMM:
       LL = -0.5 * LL
 
       if REML:
-	 LL_REML_part = q*np.log(2.0*np.pi*sigma) + np.log(linalg.det(matrixMult(X.T,X))) - np.log(linalg.det(XX))
-	 LL = LL + 0.5*LL_REML_part
+         LL_REML_part = q*np.log(2.0*np.pi*sigma) + np.log(linalg.det(matrixMult(X.T,X))) - np.log(linalg.det(XX))
+         LL = LL + 0.5*LL_REML_part
 
 
       LL = LL.sum()
@@ -296,15 +296,15 @@ class LMM:
       n = len(self.LLs)
       HOpt = []
       for i in range(1,n-2):
-          if self.LLs[i-1] < self.LLs[i] and self.LLs[i] > self.LLs[i+1]: 
-	    HOpt.append(optimize.brent(self.LL_brent,args=(X,REML),brack=(H[i-1],H[i+1])))
-	    if np.isnan(HOpt[-1]): HOpt[-1] = H[i-1]
+         if self.LLs[i-1] < self.LLs[i] and self.LLs[i] > self.LLs[i+1]: 
+            HOpt.append(optimize.brent(self.LL_brent,args=(X,REML),brack=(H[i-1],H[i+1])))
+         if np.isnan(HOpt[-1]): HOpt[-1] = H[i-1]
 	    #if np.isnan(HOpt[-1]): HOpt[-1] = self.LLs[i-1]
 	    #if np.isnan(HOpt[-1][0]): HOpt[-1][0] = [self.LLs[i-1]]
 
       if len(HOpt) > 1: 
-	 if self.verbose: sys.stderr.write("NOTE: Found multiple optima.  Returning first...\n")
-	 return HOpt[0]
+         if self.verbose: sys.stderr.write("NOTE: Found multiple optima.  Returning first...\n")
+         return HOpt[0]
       elif len(HOpt) == 1: return HOpt[0]
       elif self.LLs[0] > self.LLs[n-1]: return H[0]
       else: return H[n-1]
@@ -322,9 +322,9 @@ class LMM:
       
       if X == None: X = self.X0t
       else: 
-	 #X = np.hstack([self.X0t,matrixMult(self.Kve.T, X)])
-	 self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
-	 X = self.X0t_stack
+         #X = np.hstack([self.X0t,matrixMult(self.Kve.T, X)])
+         self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
+         X = self.X0t_stack
 
       H = np.array(range(ngrids)) / float(ngrids)
       L = np.array([self.LL(h,X,stack=False,REML=REML)[0] for h in H])
@@ -349,9 +349,9 @@ class LMM:
 
       """
       if stack: 
-	 #X = np.hstack([self.X0t,matrixMult(self.Kve.T, X)])
-	 self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
-	 X = self.X0t_stack
+      #X = np.hstack([self.X0t,matrixMult(self.Kve.T, X)])
+         self.X0t_stack[:,(self.q)] = matrixMult(self.Kve.T,X)[:,0]
+         X = self.X0t_stack
 	 
       if h == None: h = self.optH
 
