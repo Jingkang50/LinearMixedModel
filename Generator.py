@@ -5,11 +5,11 @@ import matplotlib.pyplot as plt
 from collections import Counter
 
 # Size configuration
-n = 100	    # Case Number
-p = 10000	# Feature
-k = 4       # Number of Group
+n = 1000	    # Case Number
+p = 100	# Feature
+k = 10       # Number of Group
 h = 0.2     # Impact of Group
-dense = 0.05 # density
+dense = 0.1 # density
 
 config = np.array([n,p,k,h])
 np.set_printoptions(precision=4,
@@ -51,7 +51,7 @@ Y = np.around(Y, decimals=2)
 print Y.shape
 
 # Visualization
-colors = ['g', 'r', 'b', 'y','p']
+colors = ['g', 'r', 'b', 'y','w','g', 'r', 'b', 'y','w']
 for i in range(n):
     gid = G[i]
     plt.plot(Y[i], 'o', markerfacecolor=colors[gid], marker='.',markersize = 10)

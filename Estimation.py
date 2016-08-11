@@ -117,5 +117,5 @@ def drawROC(num, method):
 drawROC(choose, 'ml')
 drawROC(choose, 'reml')
 drawROC(choose, 'lasso')
-plt.plot([0,0.1],[0,0.1],'y')
+plt.plot([0,1],[0,1],'y')
 plt.show()
