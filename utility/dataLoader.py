@@ -17,4 +17,8 @@ def dataLoading(filename):
 	for i in range(1, np.shape(G1)[0]):
 		Z1[i - 1][G1[i]] = 1
 	return X, Y, Z0, Z1
+<<<<<<< HEAD
 dataLoading('../Data/EEGdata.csv')
+=======
+# dataLoading('../Data/EEGdata.csv')
+>>>>>>> origin/master
