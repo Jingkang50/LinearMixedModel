@@ -242,6 +242,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
                 clf = None
             scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             s = np.mean(np.abs(scores))
+            print reg, s
             ss.append(s)
             if s < b:
                 b = s
@@ -257,6 +258,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
                 s = np.inf
             else:
                 s = np.abs(k - K)
+            print reg, s
             ss.append(s)
             if s < b:
                 b = s
