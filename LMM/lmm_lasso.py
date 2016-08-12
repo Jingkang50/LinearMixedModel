@@ -6,13 +6,6 @@ import scipy.optimize as opt
 import time
 import numpy as np
 
-import sys
-
-sys.path.append('../')
-
-# from evaluation import evaluation as eva
-
-
 
 def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     """
@@ -49,7 +42,7 @@ def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     return freq
 
 
-def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5):
+def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000):
 
     [n_s, n_f] = X.shape
     assert X.shape[0] == y.shape[0], 'dimensions do not match'
@@ -70,9 +63,17 @@ def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5):
     SUy = scipy.dot(U.T, y)
     SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
 
-    w = train_linear(SUX, SUy, mu)
+    if method == 'linear':
+        w = train_linear(SUX, SUy, mu, method)
+        alpha = 0
+    else:
+        regList = []
+        for i in range(10):
+            regList.append(np.exp(10, i-5))
+        alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK)
+        w = train_linear(SUX, SUy, alpha, method)
 
-    return w, ldelta0
+    return w, alpha, ldelta0
 
 
 def predict(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
@@ -127,7 +128,11 @@ helper functions
 
 def train_linear(X, y, mu=1e-4, method='linear'):
     if method == 'linear':
-        return np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), y)
+        from sklearn.linear_model import LinearRegression
+        lr = LinearRegression()
+        lr.fit(X, y)
+        w = lr.coef_
+        return w.reshape((w.shape[1],))
     elif method == 'lasso':
         from sklearn.linear_model import Lasso
         lasso = Lasso(alpha=mu)
@@ -171,7 +176,7 @@ def nLLeval(ldelta, Uy, S, REML=True):
     return nLL
 
 
-def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
+def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
     """
     train random effects model:
     min_{delta}  1/2(n_s*log(2pi) + logdet(K) + 1/ss * y^T(K + deltaI)^{-1}y,
@@ -191,8 +196,7 @@ def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldelta
     n_s = y.shape[0]
 
     # rotate data
-    if S is None or U is None:
-        S, U = linalg.eigh(K)
+    S, U = linalg.eigh(K)
 
     Uy = scipy.dot(U.T, y)
 
@@ -221,7 +225,7 @@ def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldelta
     return S, U, ldeltaopt_glob
 
 
-def cv_train(X, Y, regList, method, selectK=False, K=100):
+def cv_train(X, Y, regList, method, selectK=False, K=1000):
     ss = []
     if not selectK:
         from sklearn import cross_validation

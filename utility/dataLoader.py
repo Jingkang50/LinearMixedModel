@@ -5,7 +5,7 @@ from numpy import genfromtxt
 
 
 def EEGLoading():
-    file = genfromtxt('../Data/EEGdata.csv', delimiter=',')
+    file = np.loadtxt('../Data/EEGdata.csv', delimiter=',')
     data = np.asarray(file)
     X = data[:, 2:13]
     Y = data[:, 13:15]
@@ -21,10 +21,10 @@ def EEGLoading():
 
 
 def GenLoading(returnB=False):
-    Xdata = genfromtxt('../Data/smalldata/X.csv')
-    Ydata = genfromtxt('../Data/smalldata/Y.csv')
-    Gdata = genfromtxt('../Data/smalldata/G.csv')
-    Bdata = genfromtxt('../Data/smalldata/B.csv')
+    Xdata = np.loadtxt('../Data/mediumdata/X.csv', delimiter=',')
+    Ydata = np.loadtxt('../Data/mediumdata/Y.csv', delimiter=',')
+    Gdata = np.loadtxt('../Data/mediumdata/G.csv', delimiter=',')
+    Bdata = np.loadtxt('../Data/mediumdata/B.csv', delimiter=',')
     X = np.asarray(Xdata)
     Y = np.asarray(Ydata)
     G = np.asarray(Gdata).astype(int)
@@ -43,5 +43,5 @@ def GenLoading(returnB=False):
 if __name__ == '__main__':
     X, Y, Z0, Z1 = EEGLoading()
     print Z0.shape
-    X, Y, Z = GenLoading()
-    print Y.shape
+    X, Y, Z, B = GenLoading(True)
+    print sum(B!=0)
