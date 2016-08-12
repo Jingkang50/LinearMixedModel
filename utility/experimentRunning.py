@@ -50,5 +50,5 @@ def runGenome():
 
 
 if __name__ == '__main__':
-    runGenome()
+    # runGenome()
     runEEG()

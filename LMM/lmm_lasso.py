@@ -69,7 +69,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     else:
         regList = []
         for i in range(10):
-            regList.append(np.exp(10, i-5))
+            regList.append(10 ** i-5)
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK)
         w = train_linear(SUX, SUy, alpha, method)
 
