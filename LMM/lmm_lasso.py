@@ -49,28 +49,8 @@ def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     return freq
 
 
-def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5, rho=1, alpha=1, debug=False):
-    """
-    train linear mixed model lasso
+def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5):
 
-    Input:
-    X: Snp matrix: n_s x n_f
-    y: phenotype:  n_s x 1
-    K: kinship matrix: n_s x n_s
-    mu: l1-penalty parameter
-    numintervals: number of intervals for delta linesearch
-    ldeltamin: minimal delta value (log-space)
-    ldeltamax: maximal delta value (log-space)
-    rho: augmented Lagrangian parameter for Lasso solver
-    alpha: over-relatation parameter (typically ranges between 1.0 and 1.8) for Lasso solver
-
-    Output:
-    results
-    """
-    print 'train LMM-Lasso'
-    print '...l1-penalty: %.2f' % mu
-
-    time_start = time.time()
     [n_s, n_f] = X.shape
     assert X.shape[0] == y.shape[0], 'dimensions do not match'
     assert K.shape[0] == K.shape[1], 'dimensions do not match'
@@ -79,7 +59,7 @@ def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5, rho=1, alpha
         y = scipy.reshape(y, (n_s, 1))
 
     # train null model
-    S, U, ldelta0, monitor_nm = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax, debug=debug)
+    S, U, ldelta0 = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax)
 
     # train lasso on residuals
     delta0 = scipy.exp(ldelta0)
@@ -90,19 +70,9 @@ def train(X, K, y, mu, numintervals=100, ldeltamin=-5, ldeltamax=5, rho=1, alpha
     SUy = scipy.dot(U.T, y)
     SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
 
-    w, monitor_lasso = train_lasso(SUX, SUy, mu, rho, alpha, debug=debug)
+    w = train_linear(SUX, SUy, mu)
 
-    time_end = time.time()
-    time_diff = time_end - time_start
-    print '... finished in %.2fs' % (time_diff)
-
-    res = {}
-    res['ldelta0'] = ldelta0
-    res['weights'] = w
-    res['time'] = time_diff
-    res['monitor_lasso'] = monitor_lasso
-    res['monitor_nm'] = monitor_nm
-    return res
+    return w, ldelta0
 
 
 def predict(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
@@ -155,87 +125,19 @@ helper functions
 """
 
 
-def train_lasso(X, y, mu, rho=1, alpha=1, max_iter=5000, abstol=1E-4, reltol=1E-2, zero_threshold=1E-3, debug=False,
-                sklearn_=True):
-    """
-    train lasso via Alternating Direction Method of Multipliers:
-    min_w  0.5*sum((y-Xw)**2) + mu*|z|
-
-    Input:
-    X: design matrix: n_s x n_f
-    y: outcome:  n_s x 1
-    mu: l1-penalty parameter
-    rho: augmented Lagrangian parameter
-    alpha: over-relatation parameter (typically ranges between 1.0 and 1.8)
-
-    the implementation is a python version of Boyd's matlab implementation of ADMM-Lasso, which can be found at:
-    http://www.stanford.edu/~boyd/papers/admm/lasso/lasso.html
-
-    more information about ADMM can be found in the paper linked at:
-    http://www.stanford.edu/~boyd/papers/distr_opt_stat_learning_admm.html
-
-    In particular, you can use any other Lasso-Solver instead. For the experiments, reported in the paper,
-    we used the l1-solver from the package scikits. We didn't apply it here to avoid third-party packages.
-    """
-    monitor = {}
-    monitor['objval'] = []
-    monitor['r_norm'] = []
-    monitor['s_norm'] = []
-    monitor['eps_pri'] = []
-    monitor['eps_dual'] = []
-    if not sklearn_:
-        if debug:
-            print '... train lasso'
-
-        # init
-        [n_s, n_f] = X.shape
-        w = scipy.zeros((n_f, 1))
-        z = scipy.zeros((n_f, 1))
-        u = scipy.zeros((n_f, 1))
-
-        # cache factorization
-        U = factor(X, rho)
-
-        # save a matrix-vector multiply
-        Xy = scipy.dot(X.T, y)
-
-        if debug:
-            print 'i\tobj\t\tr_norm\t\ts_norm\t\teps_pri\t\teps_dual'
-
-        for i in range(max_iter):
-            # w-update
-            q = Xy + rho * (z - u)
-            w = q / rho - scipy.dot(X.T, linalg.cho_solve((U, False), scipy.dot(X, q))) / rho ** 2
-
-            # z-update with relaxation
-            zold = z
-            w_hat = alpha * w + (1 - alpha) * zold
-            z = soft_thresholding(w_hat + u, mu / rho)
-
-            # u-update
-            u = u + (w_hat - z)
-
-            monitor['objval'].append(lasso_obj(X, y, w, mu, z))
-            monitor['r_norm'].append(linalg.norm(w - z))
-            monitor['s_norm'].append(linalg.norm(rho * (z - zold)))
-            monitor['eps_pri'].append(scipy.sqrt(n_f) * abstol + reltol * max(linalg.norm(w), linalg.norm(z)))
-            monitor['eps_dual'].append(scipy.sqrt(n_f) * abstol + reltol * linalg.norm(rho * u))
-
-            if debug:
-                print '%3d\t%10.4f\t%10.4f\t%10.4f\t%10.4f\t%10.2f' % (
-                i, monitor['objval'][i], monitor['r_norm'][i], monitor['s_norm'][i], monitor['eps_pri'][i],
-                monitor['eps_dual'][i])
-
-            if monitor['r_norm'][i] < monitor['eps_pri'][i] and monitor['r_norm'][i] < monitor['eps_dual'][i]:
-                break
-
-        w[scipy.absolute(w) < zero_threshold] = 0
-        return w, monitor
-    else:
+def train_linear(X, y, mu=1e-4, method='linear'):
+    if method == 'linear':
+        return np.dot(np.dot(np.linalg.pinv(np.dot(X.T, X)), X.T), y)
+    elif method == 'lasso':
         from sklearn.linear_model import Lasso
         lasso = Lasso(alpha=mu)
         lasso.fit(X, y)
-        return lasso.coef_, monitor
+        return lasso.coef_
+    elif method == 'ridge':
+        from sklearn.linear_model import RidgeClassifier
+        rc = RidgeClassifier(alpha=mu)
+        rc.fit(X, y)
+        return rc.coef_
 
 
 def nLLeval(ldelta, Uy, S, REML=True):
@@ -269,7 +171,7 @@ def nLLeval(ldelta, Uy, S, REML=True):
     return nLL
 
 
-def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0,  debug=False):
+def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
     """
     train random effects model:
     min_{delta}  1/2(n_s*log(2pi) + logdet(K) + 1/ss * y^T(K + deltaI)^{-1}y,
@@ -283,9 +185,6 @@ def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldelta
     ldeltamin: minimal delta value (log-space)
     ldeltamax: maximal delta value (log-space)
     """
-    if debug:
-        print '... train null model'
-
     ldeltamin += scale
     ldeltamax += scale
 
@@ -319,108 +218,44 @@ def train_nullmodel(y, K, S=None, U=None, numintervals=500, ldeltamin=-5, ldelta
                 nllmin = nllopt
                 ldeltaopt_glob = ldeltaopt
 
-    monitor = {}
-    monitor['nllgrid'] = nllgrid
-    monitor['ldeltagrid'] = ldeltagrid
-    monitor['ldeltaopt'] = ldeltaopt_glob
-    monitor['nllopt'] = nllmin
-
-    return S, U, ldeltaopt_glob, monitor
+    return S, U, ldeltaopt_glob
 
 
-def cv_train(X, Y, regList, SKlearn=True, selectK=False, K=100):
+def cv_train(X, Y, regList, method, selectK=False, K=100):
     ss = []
     if not selectK:
-        if not SKlearn:
-            pass
-        else:
-            from sklearn.linear_model import Lasso
-            from sklearn import cross_validation
-            b = np.inf
-            breg = 0
-            for reg in regList:
+        from sklearn import cross_validation
+        b = np.inf
+        breg = 0
+        for reg in regList:
+            if method == 'lasso':
+                from sklearn.linear_model import Lasso
                 clf = Lasso(alpha=reg)
-                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
-                s = np.mean(np.abs(scores))
-                ss.append(s)
-                if s < b:
-                    b = s
-                    breg = reg
-            return breg, ss
+            elif method == 'ridge':
+                from sklearn.linear_model import RidgeClassifier
+                clf = RidgeClassifier(alpha=reg)
+            else:
+                clf = None
+            scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
+            s = np.mean(np.abs(scores))
+            ss.append(s)
+            if s < b:
+                b = s
+                breg = reg
+        return breg, ss
     else:
-        if not SKlearn:
-            pass
-        else:
-            from sklearn.linear_model import Lasso
-            b = np.inf
-            breg = 0
-            for reg in regList:
-                clf = Lasso(alpha=reg)
-                clf.fit(X, Y)
-                k = len(np.where(clf.coef_ != 0)[0])
+        b = np.inf
+        breg = 0
+        for reg in regList:
+            w = train_linear(X, Y, reg, method)
+            k = len(np.where(w != 0)[0])
+            if k < K:
+                s = np.inf
+            else:
                 s = np.abs(k - K)
-                # if k < K:
-                #     s = np.inf
-                # else:
-                #     s = np.abs(k - K)
-                ss.append(s)
-                if s < b:
-                    b = s
-                    breg = reg
-            return breg, ss
-
-
-def factor(X, rho):
-    """
-    computes cholesky factorization of the kernel K = 1/rho*XX^T + I
-
-    Input:
-    X design matrix: n_s x n_f (we assume n_s << n_f)
-    rho: regularizaer
-
-    Output:
-    L  lower triangular matrix
-    U  upper triangular matrix
-    """
-    n_s, n_f = X.shape
-    K = 1 / rho * scipy.dot(X, X.T) + scipy.eye(n_s)
-    U = linalg.cholesky(K)
-    return U
-
-
-def soft_thresholding(w, kappa):
-    """
-    Performs elementwise soft thresholding for each entry w_i of the vector w:
-    s_i= argmin_{s_i}  rho*abs(s_i) + rho/2*(x_i-s_i) **2
-    by using subdifferential calculus
-
-    Input:
-    w vector nx1
-    kappa regularizer
-
-    Output:
-    s vector nx1
-    """
-    n_f = w.shape[0]
-    zeros = scipy.zeros((n_f, 1))
-    s = np.max(scipy.hstack((w - kappa, zeros)), axis=1) - np.max(scipy.hstack((-w - kappa, zeros)), axis=1)
-    s = scipy.reshape(s, (n_f, 1))
-    return s
-
-
-def lasso_obj(X, y, w, mu, z):
-    """
-    evaluates lasso objective: 0.5*sum((y-Xw)**2) + mu*|z|
-
-    Input:
-    X: design matrix: n_s x n_f
-    y: outcome:  n_s x 1
-    mu: l1-penalty parameter
-    w: weights: n_f x 1
-    z: slack variables: n_fx1
-
-    Output:
-    obj
-    """
-    return 0.5 * ((scipy.dot(X, w) - y) ** 2).sum() + mu * scipy.absolute(z).sum()
+            ss.append(s)
+            if s < b:
+                b = s
+                breg = reg
+        return breg, ss
 

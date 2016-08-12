@@ -1,7 +1,8 @@
-from sklearn.cluster import KMeans
+from collections import Counter
+
 import numpy as np
 import scipy.sparse as sparse
-from collections import Counter
+from sklearn.cluster import KMeans
 
 # Size configuration
 n = 100	    # Case Number
@@ -83,16 +84,16 @@ K = lmm.calculateKinship(Z)
 # return beta, sigma
 # ML solution
 begin = time.time()
-B_reml = lmm.GWAS(Y,X,K)
+B_reml = lmm.GWAS(Y, X, K)
 end = time.time()
 sys.stderr.write("Total time for 100 SNPs: %0.3f\n" % (end- begin))
 # print B_reml
 np.savetxt(datapath + "REML_B.csv", B_reml, '%5.2f',delimiter=",")
-B_ml = lmm.GWAS(Y,X,K,REML=False)
+B_ml = lmm.GWAS(Y, X, K, REML=False)
 np.savetxt(datapath + "ML_B.csv", B_ml, '%5.2f',delimiter=",")
 
 import lmm_lasso
-res = lmm_lasso.train(X,K,Y,0.5)
+res = lmm_lasso.train(X, K, Y, 0.5)
 beta = res["weights"]
 print len(beta)
 np.savetxt(datapath + "lasso_B.csv", beta, '%5.2f',delimiter=",")

@@ -1,5 +1,5 @@
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Step 1: Load in data once generated.
 
@@ -29,12 +29,12 @@ K = lmm.calculateKinship(Z)
 # return beta, sigma
 # ML solution
 begin = time.time()
-B_reml = lmm.GWAS(Y,X,K)
+B_reml = lmm.GWAS(Y, X, K)
 end = time.time()
 sys.stderr.write("Total time for 100 SNPs: %0.3f\n" % (end- begin))
 # print B_reml
 np.savetxt("./Data/smalldata/REML_B.csv", B_reml, '%5.2f',delimiter=",")
-B = lmm.GWAS(Y,X,K,REML=False)
+B = lmm.GWAS(Y, X, K, REML=False)
 np.savetxt("./Data/smalldata/ML_B.csv", B, '%5.2f',delimiter=",")
 
 import lmm_lasso
@@ -46,7 +46,7 @@ numintv = 1000
 rho= 1
 alpha= 1.5
 
-res = lmm_lasso.train(X,K,Y,mu=mu,numintervals=numintv,ldeltamin=min,ldeltamax=max,rho=rho,alpha=alpha)
+res = lmm_lasso.train(X, K, Y, mu=mu, numintervals=numintv, ldeltamin=min, ldeltamax=max, rho=rho, alpha=alpha)
 beta = res["weights"]
 print len(beta)
 np.savetxt("./Data/smalldata/lasso_B.csv", beta, '%5.2f',delimiter=",")
