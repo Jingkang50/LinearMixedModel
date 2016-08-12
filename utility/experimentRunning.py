@@ -22,7 +22,7 @@ def runEEG():
 
     w_linear, alp, l_linear = train(Xtr, Ktr, Ytr, mu=0, method='linear', selectK=False)
     w_lasso, alp, l_lasso = train(Xtr, Ktr, Ytr, mu=0.01, method='lasso', selectK=False)
-    w_rd, alp, l_rd = train(Xtr, Ktr, Ytr, mu=0.01, method='lasso', selectK=False)
+    w_rd, alp, l_rd = train(Xtr, Ktr, Ytr, mu=0.01, method='ridge', selectK=False)
 
     y_pred_linear = predict(Ytr, Xtr, Xte, Ktr, Kte, l_linear, w_linear)
     y_pred_lasso = predict(Ytr, Xtr, Xte, Ktr, Kte, l_lasso, w_lasso)
@@ -40,7 +40,7 @@ def runGenome():
     K = np.dot(Z, Z.T)
     w_linear, alp, l_linear = train(X, K, Y, mu=0, method='linear', selectK=True)
     w_lasso, alp, l_lasso = train(X, K, Y, mu=0.01, method='lasso', selectK=True)
-    w_rd, alp, l_rd = train(X, K, Y, mu=0.01, method='lasso', selectK=True)
+    w_rd, alp, l_rd = train(X, K, Y, mu=0.01, method='ridge', selectK=True)
     m = []
     m.append(w_linear)
     m.append(w_lasso)
