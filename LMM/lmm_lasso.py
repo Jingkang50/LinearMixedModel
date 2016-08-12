@@ -254,10 +254,11 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
         for reg in regList:
             w = train_linear(X, Y, reg, method)
             k = len(np.where(w != 0)[0])
-            if k < K:
-                s = np.inf
-            else:
-                s = np.abs(k - K)
+            s = np.abs(k-K)
+            # if k < K:
+            #     s = np.inf
+            # else:
+            #     s = np.abs(k - K)
             print reg, s
             ss.append(s)
             if s < b:
