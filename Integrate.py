@@ -1,6 +1,7 @@
 from sklearn.cluster import KMeans
 import numpy as np
 import scipy.sparse as sparse
+from collections import Counter
 
 # Size configuration
 n = 100	    # Case Number
@@ -9,6 +10,7 @@ k = 5       # Number of Group
 h = 0.2     # Impact of Group
 dense = 0.3 # density
 datapath = './Data/mediumdata/'
+
 
 
 
@@ -51,6 +53,9 @@ Y = Y_1 * [[1-h]] + Y_2 * [[h]]
 Y = np.around(Y, decimals=2)
 
 print Y.shape
+
+G = clf.labels_
+print 'the outcome of clustering:' + Counter(G)
 
 print "Start save txt"
 np.savez(datapath+"data", config, X, B, Y, G)
