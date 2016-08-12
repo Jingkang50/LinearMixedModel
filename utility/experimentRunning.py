@@ -11,7 +11,7 @@ methods = ['linear', 'lasso', 'ridge']
 
 def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     X, y, Z0, Z1 = EEGLoading()
-    Y = y[:, 1]
+    Y = y[:, 0]
     K = np.dot(Z0, Z0.T)
 
     Xtr = X[:10000, :]

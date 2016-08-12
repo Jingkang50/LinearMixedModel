@@ -43,17 +43,17 @@ def accuracy(y_true, y_pred_l):
         y_pred[y_pred<m] = 0
         a = accuracy_score(y_true, y_pred.astype(int))
         r.append(a)
-        plt.scatter(x, y_pred)
-        plt.show()
-    plt.scatter(x, y_true)
-    plt.show()
+        # plt.scatter(x, y_pred)
+        # plt.show()
+    # plt.scatter(x, y_true)
+    # plt.show()
     return r
 
 if __name__ == '__main__':
     from dataLoader import EEGLoading, GenLoading
-    # X, Y, Z, B = GenLoading(True)
-    # beta_pred_list = np.loadtxt('../results/genomeResult.csv', delimiter=',')
-    # precison_recall_curve(B, beta_pred_list, ['linear', 'L1', 'L2'])
+    X, Y, Z, B = GenLoading(True)
+    beta_pred_list = np.loadtxt('../results/genomeResult.csv', delimiter=',')
+    precison_recall_curve(B, beta_pred_list, ['linear', 'L1', 'L2'])
 
     X, Y, Z0, Z1 = EEGLoading()
     y_pred_list = np.loadtxt('../results/EEGResult.csv', delimiter=',')
