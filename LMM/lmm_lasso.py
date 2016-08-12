@@ -139,8 +139,8 @@ def train_linear(X, y, mu=1e-4, method='linear'):
         lasso.fit(X, y)
         return lasso.coef_
     elif method == 'ridge':
-        from sklearn.linear_model import RidgeClassifier
-        rc = RidgeClassifier(alpha=mu)
+        from sklearn.linear_model import Ridge
+        rc = Ridge(alpha=mu)
         rc.fit(X, y)
         return rc.coef_
 
@@ -236,8 +236,8 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
                 from sklearn.linear_model import Lasso
                 clf = Lasso(alpha=reg)
             elif method == 'ridge':
-                from sklearn.linear_model import RidgeClassifier
-                clf = RidgeClassifier(alpha=reg)
+                from sklearn.linear_model import Ridge
+                clf = Ridge(alpha=reg)
             else:
                 clf = None
             scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
