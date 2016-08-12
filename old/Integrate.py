@@ -13,8 +13,6 @@ dense = 0.3 # density
 datapath = './Data/mediumdata/'
 
 
-
-
 # other setting:
 config = np.array([n,p,k,h])
 np.set_printoptions(precision=4,
