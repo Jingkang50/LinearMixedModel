@@ -73,10 +73,10 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK)
         w = train_linear(SUX, SUy, alpha, method)
 
-    return w, alpha, ldelta0
+    return w, alpha, ldelta0, S, U
 
 
-def predict(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
+def predict_old(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
     """
     predict the phenotype
 
@@ -120,6 +120,18 @@ def predict(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
                                                                         y_t - scipy.dot(X_t[:, idx], w[idx])))
     return y_v
 
+def predict(X, S, U, ldelta, w):
+    [n_s, n_f] = X.shape
+    delta0 = scipy.exp(ldelta)
+    Sdi = 1. / (S + delta0)
+    Sdi_sqrt = scipy.sqrt(Sdi)
+    SUX = scipy.dot(U.T, X)
+    SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
+
+    SUy = np.dot(SUX, w)
+    SUy = SUy / scipy.reshape(Sdi_sqrt, (n_s, 1))
+    y = np.dot(np.linalg.pinv(U.T), SUy)
+    return y
 
 """
 helper functions
