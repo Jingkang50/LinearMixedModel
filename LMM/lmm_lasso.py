@@ -142,7 +142,7 @@ def train_linear(X, y, mu=1e-4, method='linear'):
         from sklearn.linear_model import Ridge
         rc = Ridge(alpha=mu)
         rc.fit(X, y)
-        return rc.coef_
+        return rc.coef_[0]
 
 
 def nLLeval(ldelta, Uy, S, REML=True):
@@ -253,7 +253,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
         breg = 0
         for reg in regList:
             w = train_linear(X, Y, reg, method)
-            k = len(np.where(w != 0)[0])
+            k = len(np.where(w > 0.2 )[0])
             s = np.abs(k-K)
             # if k < K:
             #     s = np.inf
