@@ -42,7 +42,7 @@ def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     return freq
 
 
-def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000):
+def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True):
 
     [n_s, n_f] = X.shape
     assert X.shape[0] == y.shape[0], 'dimensions do not match'
@@ -60,20 +60,21 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     Sdi_sqrt = scipy.sqrt(Sdi)
     SUX = scipy.dot(U.T, X)
     SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
-    # SUy = scipy.dot(U.T, y)
-    # SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
-    SUy = y
-    print SUy
+    if regression:
+        SUy = scipy.dot(U.T, y)
+        SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
+    else:
+        SUy = y
 
     if method == 'linear':
-        w, clf = train_linear(SUX, SUy, mu, method)
+        w, clf = train_linear(SUX, SUy, mu, method, regression)
         alpha = 0
     else:
         regList = []
         for i in range(10):
             regList.append(10 ** (i-5))
-        alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK)
-        w, clf = train_linear(SUX, SUy, alpha, method)
+        alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
+        w, clf = train_linear(SUX, SUy, alpha, method, regression)
 
     return w, alpha, ldelta0, clf
 
@@ -139,23 +140,41 @@ helper functions
 """
 
 
-def train_linear(X, y, mu=1e-4, method='linear'):
-    if method == 'linear':
-        from sklearn.linear_model import LogisticRegression
-        lr = LogisticRegression()
-        lr.fit(X, y)
-        w = lr.coef_
-        return w.reshape((w.shape[1],)), lr
-    elif method == 'lasso':
-        from sklearn.linear_model import Lasso
-        lasso = Lasso(alpha=mu)
-        lasso.fit(X, y)
-        return lasso.coef_, lasso
-    elif method == 'ridge':
-        from sklearn.linear_model import RidgeClassifier
-        rc = RidgeClassifier(alpha=mu)
-        rc.fit(X, y)
-        return rc.coef_[0], rc
+def train_linear(X, y, mu=1e-4, method='linear', regression=True):
+    if not regression:
+        if method == 'linear':
+            from sklearn.linear_model import LogisticRegression
+            lr = LogisticRegression()
+            lr.fit(X, y)
+            w = lr.coef_
+            return w.reshape((w.shape[1],)), lr
+        elif method == 'lasso':
+            from sklearn.linear_model import Lasso
+            lasso = Lasso(alpha=mu)
+            lasso.fit(X, y)
+            return lasso.coef_, lasso
+        elif method == 'ridge':
+            from sklearn.linear_model import RidgeClassifier
+            rc = RidgeClassifier(alpha=mu)
+            rc.fit(X, y)
+            return rc.coef_[0], rc
+    else:
+        if method == 'linear':
+            from sklearn.linear_model import LinearRegression
+            lr = LinearRegression()
+            lr.fit(X, y)
+            w = lr.coef_
+            return w.reshape((w.shape[1],)), lr
+        elif method == 'lasso':
+            from sklearn.linear_model import Lasso
+            lasso = Lasso(alpha=mu)
+            lasso.fit(X, y)
+            return lasso.coef_, lasso
+        elif method == 'ridge':
+            from sklearn.linear_model import Ridge
+            rc = Ridge(alpha=mu)
+            rc.fit(X, y)
+            return rc.coef_[0], rc
 
 
 def nLLeval(ldelta, Uy, S, REML=True):
@@ -238,7 +257,7 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
     return S, U, ldeltaopt_glob
 
 
-def cv_train(X, Y, regList, method, selectK=False, K=1000):
+def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
     ss = []
     if not selectK:
         from sklearn import cross_validation
@@ -249,11 +268,18 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
                 from sklearn.linear_model import Lasso
                 clf = Lasso(alpha=reg)
             elif method == 'ridge':
-                from sklearn.linear_model import RidgeClassifier
-                clf = RidgeClassifier(alpha=reg)
+                if regression:
+                    from sklearn.linear_model import Ridge
+                    clf = Ridge(alpha=reg)
+                else:
+                    from sklearn.linear_model import RidgeClassifier
+                    clf = RidgeClassifier(alpha=reg)
             else:
                 clf = None
-            scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+            if regression:
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+            else:
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
@@ -265,7 +291,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
         b = np.inf
         breg = 0
         for reg in regList:
-            w = train_linear(X, Y, reg, method)
+            w = train_linear(X, Y, reg, method, regression)
             k = len(np.where(w > 0.2 )[0])
             s = np.abs(k-K)
             # if k < K:
