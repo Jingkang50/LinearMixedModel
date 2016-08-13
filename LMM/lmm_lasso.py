@@ -64,7 +64,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         SUy = scipy.dot(U.T, y)
         SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
     else:
-        SUy = y.astype(int).reshape((y.shape[1],))
+        SUy = y.astype(int)
 
     if method == 'linear':
         w, clf = train_linear(SUX, SUy, mu, method, regression)
@@ -280,7 +280,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
             if regression:
                 scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             else:
-                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
