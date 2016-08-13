@@ -22,9 +22,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     Xte = X[10000:, :]
     Kte = K[10000:, :10000]
 
-    print 'linear'
-    w_linear, alp, l_linear, clf_linear = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
-                                                ldeltamax=ldeltamax, method='linear', selectK=False, regression=False)
+    # print 'linear'
+    # w_linear, alp, l_linear, clf_linear = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+    #                                             ldeltamax=ldeltamax, method='linear', selectK=False, regression=False)
     print 'lasso'
     w_lasso, alp, l_lasso, clf_lasso = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                              ldeltamax=ldeltamax, method='lasso', selectK=False, regression=False)
@@ -32,12 +32,12 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     w_rd, alp, l_rd, clf_rd = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                     ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False)
 
-    y_pred_linear = predict(Xte, Kte, l_linear, clf_linear)
+    # y_pred_linear = predict(Xte, Kte, l_linear, clf_linear)
     y_pred_lasso = predict(Xte, Kte, l_lasso, clf_lasso)
     y_pred_rd = predict(Xte, Kte, l_rd, clf_rd)
 
     m = []
-    m.append(y_pred_linear)
+    # m.append(y_pred_linear)
     m.append(y_pred_lasso)
     m.append(y_pred_rd)
     m = np.array(m)
@@ -62,5 +62,5 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 
 if __name__ == '__main__':
-    runGenome(1000, -10, 10)
+    # runGenome(1000, -10, 10)
     runEEG(1000, -10, 10)
