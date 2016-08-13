@@ -15,7 +15,7 @@ def precision_recall(beta_true, beta_pred):
 def precison_recall_curve(beta_true, beta_pred_list, labels):
     from matplotlib import pyplot as plt
 
-    beta_pred_list = clean(beta_pred_list)
+    # beta_pred_list = clean(beta_pred_list)
     b_true = beta_true!=0
     for i in range(len(beta_pred_list)):
         fpr, tpr, t = roc_curve(b_true, beta_pred_list[i], pos_label=1)
@@ -37,10 +37,10 @@ def accuracy(y_true, y_pred_l):
     r = []
     x = xrange(len(y_true))
     for y_pred in y_pred_l:
-        m = np.median(y_pred)
-        assert m<1
-        y_pred[y_pred>m] = 1
-        y_pred[y_pred<m] = 0
+        # m = np.median(y_pred)
+        # assert m<1
+        # y_pred[y_pred>m] = 1
+        # y_pred[y_pred<m] = 0
         a = accuracy_score(y_true, y_pred.astype(int))
         r.append(a)
         # plt.scatter(x, y_pred)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     y_pred_list = np.loadtxt('../results/EEGResult.csv', delimiter=',')
     # print Y.shape
     # print y_pred_list.shape
-    print accuracy(Y[10000:, 0], y_pred_list)
+    print accuracy(Y[10000:, 1], y_pred_list)
 
 
 
