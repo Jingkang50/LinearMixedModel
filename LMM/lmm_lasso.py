@@ -281,7 +281,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
             if regression:
                 scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             else:
-                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
