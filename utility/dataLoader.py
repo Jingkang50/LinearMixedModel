@@ -21,10 +21,10 @@ def EEGLoading():
 
 
 def GenLoading(returnB=False):
-    Xdata = np.loadtxt('../Data/mediumdata/X.csv', delimiter=',')
-    Ydata = np.loadtxt('../Data/mediumdata/Y.csv', delimiter=',')
-    Gdata = np.loadtxt('../Data/mediumdata/G.csv', delimiter=',')
-    Bdata = np.loadtxt('../Data/mediumdata/B.csv', delimiter=',')
+    Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.all.csv', delimiter=',')
+    Ydata = np.loadtxt('../Data/ATdata/snps.n.pheno.csv', delimiter=',')
+    Gdata = np.loadtxt('../Data/ATdata/snps.n.group.csv', delimiter=',')
+    Bdata = np.loadtxt('../Data/ATdata/snps.n.pheno.causal.csv', delimiter=',')
     X = np.asarray(Xdata)
     Y = np.asarray(Ydata)
     G = np.asarray(Gdata).astype(int)
