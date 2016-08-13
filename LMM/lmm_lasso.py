@@ -64,7 +64,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         SUy = scipy.dot(U.T, y)
         SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
     else:
-        SUy = y
+        SUy = y.astype(int)
 
     if method == 'linear':
         w, clf = train_linear(SUX, SUy, mu, method, regression)
