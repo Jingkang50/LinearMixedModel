@@ -126,15 +126,15 @@ def predict_old(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
     return y_v
 
 def predict(X, Kvt, ldelta, clf):
-    S, U = linalg.eigh(Kvt)
-    [n_s, n_f] = X.shape
-    delta0 = scipy.exp(ldelta)
-    Sdi = 1. / (S + delta0)
-    Sdi_sqrt = scipy.sqrt(Sdi)
-    SUX = scipy.dot(U.T, X)
-    SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
+    # S, U = linalg.eigh(Kvt)
+    # [n_s, n_f] = X.shape
+    # delta0 = scipy.exp(ldelta)
+    # Sdi = 1. / (S + delta0)
+    # Sdi_sqrt = scipy.sqrt(Sdi)
+    # SUX = scipy.dot(U.T, X)
+    # SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
 
-    y = clf.predict(SUX)
+    y = clf.predict(X)
     return y
 
 """
