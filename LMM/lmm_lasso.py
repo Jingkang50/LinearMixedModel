@@ -60,20 +60,21 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     Sdi_sqrt = scipy.sqrt(Sdi)
     SUX = scipy.dot(U.T, X)
     SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
-    SUy = scipy.dot(U.T, y)
-    SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
+    # SUy = scipy.dot(U.T, y)
+    # SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
+    SUy = y
 
     if method == 'linear':
-        w = train_linear(SUX, SUy, mu, method)
+        w, clf = train_linear(SUX, SUy, mu, method)
         alpha = 0
     else:
         regList = []
         for i in range(10):
             regList.append(10 ** (i-5))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK)
-        w = train_linear(SUX, SUy, alpha, method)
+        w, clf = train_linear(SUX, SUy, alpha, method)
 
-    return w, alpha, ldelta0, S, U
+    return w, alpha, ldelta0, clf
 
 
 def predict_old(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
@@ -120,7 +121,8 @@ def predict_old(y_t, X_t, X_v, K_tt, K_vt, ldelta, w):
                                                                         y_t - scipy.dot(X_t[:, idx], w[idx])))
     return y_v
 
-def predict(X, S, U, ldelta, w):
+def predict(X, Kvt, ldelta, clf):
+    S, U = linalg.eigh(Kvt)
     [n_s, n_f] = X.shape
     delta0 = scipy.exp(ldelta)
     Sdi = 1. / (S + delta0)
@@ -128,9 +130,7 @@ def predict(X, S, U, ldelta, w):
     SUX = scipy.dot(U.T, X)
     SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
 
-    SUy = np.dot(SUX, w)
-    SUy = SUy / scipy.reshape(Sdi_sqrt, (n_s, 1))
-    y = np.dot(np.linalg.pinv(U.T), SUy)
+    y = clf.predict(SUX)
     return y
 
 """
@@ -140,21 +140,21 @@ helper functions
 
 def train_linear(X, y, mu=1e-4, method='linear'):
     if method == 'linear':
-        from sklearn.linear_model import LinearRegression
-        lr = LinearRegression()
+        from sklearn.linear_model import LogisticRegression
+        lr = LogisticRegression()
         lr.fit(X, y)
         w = lr.coef_
-        return w.reshape((w.shape[1],))
+        return w.reshape((w.shape[1],)), lr
     elif method == 'lasso':
         from sklearn.linear_model import Lasso
         lasso = Lasso(alpha=mu)
         lasso.fit(X, y)
-        return lasso.coef_
+        return lasso.coef_, lasso
     elif method == 'ridge':
-        from sklearn.linear_model import Ridge
-        rc = Ridge(alpha=mu)
+        from sklearn.linear_model import RidgeClassifier
+        rc = RidgeClassifier(alpha=mu)
         rc.fit(X, y)
-        return rc.coef_[0]
+        return rc.coef_[0], rc
 
 
 def nLLeval(ldelta, Uy, S, REML=True):
@@ -248,11 +248,11 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000):
                 from sklearn.linear_model import Lasso
                 clf = Lasso(alpha=reg)
             elif method == 'ridge':
-                from sklearn.linear_model import Ridge
-                clf = Ridge(alpha=reg)
+                from sklearn.linear_model import RidgeClassifier
+                clf = RidgeClassifier(alpha=reg)
             else:
                 clf = None
-            scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
+            scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='accuracy')
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)

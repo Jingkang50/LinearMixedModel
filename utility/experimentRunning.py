@@ -20,13 +20,13 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     Xte = X[10000:, :]
     Kte = K[10000:, :10000]
 
-    w_linear, alp, l_linear, S_linear, U_linear = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='linear', selectK=False)
-    w_lasso, alp, l_lasso, S_lasso,U_lasso = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='lasso', selectK=False)
-    w_rd, alp, l_rd, S_rd,U_rd = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='ridge', selectK=False)
+    w_linear, alp, l_linear, clf_linear = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='linear', selectK=False)
+    w_lasso, alp, l_lasso, clf_lasso = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='lasso', selectK=False)
+    w_rd, alp, l_rd, clf_rd = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='ridge', selectK=False)
 
-    y_pred_linear = predict(Xte, S_linear, U_linear, l_linear, w_linear)
-    y_pred_lasso = predict(Xte, S_lasso, U_lasso, l_lasso, w_lasso)
-    y_pred_rd = predict(Xte, S_rd, U_rd,l_rd, w_rd)
+    y_pred_linear = predict(Xte, Kte, l_linear, clf_linear)
+    y_pred_lasso = predict(Xte, Kte, l_lasso, clf_lasso)
+    y_pred_rd = predict(Xte, Kte, l_rd, clf_rd)
 
     m = []
     m.append(y_pred_linear)
@@ -38,9 +38,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
 def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
     X, Y, Z, B = GenLoading(True)
     K = np.dot(Z, Z.T)
-    w_linear, alp, l_linear, S_linear, U_linear = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='linear', selectK=True)
-    w_lasso, alp, l_lasso,S_lasso, U_lasso = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='lasso', selectK=True)
-    w_rd, alp, l_rd,S_rd, U_rd = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='ridge', selectK=True)
+    w_linear, alp, l_linear, clf_linear = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='linear', selectK=True)
+    w_lasso, alp, l_lasso,clf_lasso = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='lasso', selectK=True)
+    w_rd, alp, l_rd,clf_rd = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax, method='ridge', selectK=True)
     m = []
     m.append(w_linear)
     m.append(w_lasso)
