@@ -259,6 +259,7 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
 
 def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
     ss = []
+    print Y
     if not selectK:
         from sklearn import cross_validation
         b = np.inf

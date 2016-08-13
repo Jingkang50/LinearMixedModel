@@ -22,10 +22,13 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     Xte = X[10000:, :]
     Kte = K[10000:, :10000]
 
+    print 'linear'
     w_linear, alp, l_linear, clf_linear = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                 ldeltamax=ldeltamax, method='linear', selectK=False, regression=False)
+    print 'lasso'
     w_lasso, alp, l_lasso, clf_lasso = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                              ldeltamax=ldeltamax, method='lasso', selectK=False, regression=False)
+    print 'ridge'
     w_rd, alp, l_rd, clf_rd = train(Xtr, Ktr, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                     ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False)
 
