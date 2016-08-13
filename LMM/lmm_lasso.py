@@ -64,7 +64,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         SUy = scipy.dot(U.T, y)
         SUy = SUy * scipy.reshape(Sdi_sqrt, (n_s, 1))
     else:
-        SUy = y.astype(int)
+        SUy = y.astype(int)[0]
 
     if method == 'linear':
         w, clf = train_linear(SUX, SUy, mu, method, regression)
@@ -259,7 +259,6 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
 
 def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
     ss = []
-    print Y
     if not selectK:
         from sklearn import cross_validation
         b = np.inf
