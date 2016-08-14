@@ -21,27 +21,33 @@ def EEGLoading():
 
 
 def GenLoading(returnB=False):
-    Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.all.csv', delimiter=',')
+    Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.chrom1.csv', delimiter=',')
     Ydata = np.loadtxt('../Data/ATdata/snps.n.pheno.csv', delimiter=',')
-    Gdata = np.loadtxt('../Data/ATdata/snps.n.group.csv', delimiter=',')
+    G1data = np.loadtxt('../Data/ATdata/snps.n.group1.csv', delimiter=',')
+    G2data = np.loadtxt('../Data/ATdata/snps.n.group2.csv', delimiter=',')
     Bdata = np.loadtxt('../Data/ATdata/snps.n.pheno.causal.csv', delimiter=',')
     X = np.asarray(Xdata)
     Y = np.asarray(Ydata)
-    G = np.asarray(Gdata).astype(int)
+    G1 = np.asarray(G1data).astype(int)
+    G2 = np.asarray(G2data).astype(int)
     B = np.asarray(Bdata)
-    Z = np.zeros([np.shape(X)[0], np.amax(G) + 1])
-    for i in range(1, np.shape(G)[0]):
-        Z[i - 1][G[i]] = 1
+    Z1 = np.zeros([np.shape(X)[0], np.amax(G1) + 1])
+    for i in range(1, np.shape(G1)[0]):
+        Z1[i - 1][G1[i]] = 1
+    Z2 = np.zeros([np.shape(X)[0], np.amax(G2) + 1])
+    for i in range(1, np.shape(G2)[0]):
+        Z2[i - 1][G2[i]] = 1
     if returnB == False:
-        return X, Y, Z
+        return X, Y, Z1, Z2
     else:
-        return X, Y, Z, B
+        return X, Y, Z1, Z2, B
 
 
 # dataLoading('../Data/EEGdata.csv')
 
 if __name__ == '__main__':
-    X, Y, Z0, Z1 = EEGLoading()
-    print Z0.shape
-    X, Y, Z, B = GenLoading(True)
+    # X, Y, Z0, Z1 = EEGLoading()
+    # print Z0.shape
+    X, Y, Z1, Z2, B = GenLoading(True)
     print sum(B!=0)
+    print Z2.shape
