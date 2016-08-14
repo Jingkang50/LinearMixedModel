@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import math
 
-reader = pd.read_csv('../Data/ATdata/athaliana.snps.chrom1.csv',dtype={'a': np.int8}, header=None, iterator=True)
+reader = pd.read_csv('../Data/ATdata/athaliana.snps.all.csv',dtype={'a': np.int8}, header=None, iterator=True)
 try:
     df = reader.get_chunk(100000000)
 except StopIteration:
