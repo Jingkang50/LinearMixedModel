@@ -17,7 +17,7 @@ pe = 0.3
 pg1 = 0.3
 pg2 = 0.3
 
-snps = np.asarray(df, dtype=float)[:-2]
+snps = np.asarray(df, dtype=float)
 snps.astype('int')
 
 [m, n] = snps.shape
@@ -31,10 +31,10 @@ error = np.random.normal(0, 1, m)
 
 from sklearn.cluster import KMeans
 # single
-y = (1-pe)*ypheno + pe*error
-causal = np.array(zip(idx, w))
-np.savetxt('../Data/ATdata/snps.i.pheno.csv', y, '%5.2f', delimiter=',')
-np.savetxt('../Data/ATdata/snps.i.pheno.causal.csv', causal, '%5.2f', delimiter=',')
+# y = (1-pe)*ypheno + pe*error
+# causal = np.array(zip(idx, w))
+# np.savetxt('../Data/ATdata/snps.i.pheno.csv', y, '%5.2f', delimiter=',')
+# np.savetxt('../Data/ATdata/snps.i.pheno.causal.csv', causal, '%5.2f', delimiter=',')
 
 # population
 # categories = [int(line.strip()) for line in open('../data/athaliana.snps.categories.txt')][:m]
