@@ -15,7 +15,7 @@ def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5,
         y = scipy.reshape(y, (n_s, 1))
 
     # train null model
-    ldelta0 = train_nullmodel_multi(y, KList, numintervals, ldeltamin, ldeltamax, SList=SList, UList=UList)
+    SList, UList, ldelta0 = train_nullmodel_multi(y, KList, numintervals, ldeltamin, ldeltamax, SList=SList, UList=UList)
 
     # train lasso on residuals
     SUX = X
@@ -111,6 +111,6 @@ def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5,
 
         lg_list.append(ldeltaopt_glob)
 
-    return lg_list
+    return SList, UList, lg_list
 
 
