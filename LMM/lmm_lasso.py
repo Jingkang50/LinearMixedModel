@@ -301,13 +301,13 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         breg = 0
         for reg in regList:
             w = train_linear(X, Y, reg, method, regression)
-            k = len(np.where(w > 0.01 )[0])
+            k = len(np.where(w > 1e-3 )[0])
             # s = np.abs(k-K)
             if k < K:
                 s = np.inf
             else:
                 s = np.abs(k - K)
-            print reg, s
+            print reg, s, np.mean(w)
             ss.append(s)
             if s < b:
                 b = s
