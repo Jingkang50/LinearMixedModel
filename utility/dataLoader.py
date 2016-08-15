@@ -27,7 +27,7 @@ def EEGLoading_KSU(i):
 
 
 def GenLoading(returnB=False):
-    Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.all.csv', delimiter=',')
+    Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.chrom1.csv', delimiter=',')
     Ydata = np.loadtxt('../Data/ATdata/snps.n.pheno.csv', delimiter=',')
     G1data = np.loadtxt('../Data/ATdata/snps.n.group1.csv', delimiter=',')
     G2data = np.loadtxt('../Data/ATdata/snps.n.group2.csv', delimiter=',')
