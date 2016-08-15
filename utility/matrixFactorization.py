@@ -15,6 +15,7 @@ def runEEG():
     K0 = K0[:10000, :10000]
     S0, U0 = Factorization(K0)
 
+    np.savetxt('../Data/EEGdata/K0.csv', K0, delimiter=',')
     np.savetxt('../Data/EEGdata/S0.csv', S0, delimiter=',')
     np.savetxt('../Data/EEGdata/U0.csv', U0, delimiter=',')
 
@@ -23,6 +24,7 @@ def runEEG():
     K1 = K1[:10000, :10000]
     S1, U1 = Factorization(K1)
 
+    np.savetxt('../Data/EEGdata/K1.csv', K1, delimiter=',')
     np.savetxt('../Data/EEGdata/S1.csv', S1, delimiter=',')
     np.savetxt('../Data/EEGdata/U1.csv', U1, delimiter=',')
 
@@ -33,6 +35,7 @@ def runEEG():
     K2 = K2[:10000, :10000]
     S2, U2 = Factorization(K2)
 
+    np.savetxt('../Data/EEGdata/K2.csv', K2, delimiter=',')
     np.savetxt('../Data/EEGdata/S2.csv', S2, delimiter=',')
     np.savetxt('../Data/EEGdata/U2.csv', U2, delimiter=',')
 
@@ -43,6 +46,7 @@ def runGenome():
     K0 = np.dot(Z0, Z0.T)
     S0, U0 = Factorization(K0)
 
+    np.savetxt('../Data/ATdata/K0.csv', K0, delimiter=',')
     np.savetxt('../Data/ATdata/S0.csv', S0, delimiter=',')
     np.savetxt('../Data/ATdata/U0.csv', U0, delimiter=',')
 
@@ -50,6 +54,7 @@ def runGenome():
     K1 = np.dot(Z1, Z1.T)
     S1, U1 = Factorization(K1)
 
+    np.savetxt('../Data/ATdata/K1.csv', K1, delimiter=',')
     np.savetxt('../Data/ATdata/S1.csv', S1, delimiter=',')
     np.savetxt('../Data/ATdata/U1.csv', U1, delimiter=',')
 
@@ -59,10 +64,11 @@ def runGenome():
     K2 = np.dot(Z2, Z2.T)
     S2, U2 = Factorization(K2)
 
+    np.savetxt('../Data/ATdata/K2.csv', K2, delimiter=',')
     np.savetxt('../Data/ATdata/S2.csv', S2, delimiter=',')
     np.savetxt('../Data/ATdata/U2.csv', U2, delimiter=',')
 
 
 if __name__ == '__main__':
-    # runEEG()
+    runEEG()
     runGenome()
