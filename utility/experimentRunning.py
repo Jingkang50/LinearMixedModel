@@ -63,10 +63,10 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
         w_linear, alp, l_linear, clf_linear = trainMulti(Xtr, KList, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                     ldeltamax=ldeltamax, method='linear', selectK=False, regression=False)
         print 'lasso'
-        w_lasso, alp, l_lasso, clf_lasso = trainMulti(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+        w_lasso, alp, l_lasso, clf_lasso = trainMulti(Xtr, KList, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                  ldeltamax=ldeltamax, method='lasso', selectK=False, regression=False)
         print 'ridge'
-        w_rd, alp, l_rd, clf_rd = trainMulti(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+        w_rd, alp, l_rd, clf_rd = trainMulti(Xtr, KList, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                         ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False)
 
         y_pred_linear = predict(Xte, None, l_linear, clf_linear)
