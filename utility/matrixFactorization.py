@@ -12,6 +12,7 @@ def runEEG():
 
     print 'EEG Z0'
     K0 = np.dot(Z0, Z0.T)
+    K0 = K0[:10000, :10000]
     S0, U0 = Factorization(K0)
 
     np.savetxt('../Data/EEGdata/S0.csv', S0, delimiter=',')
@@ -19,6 +20,7 @@ def runEEG():
 
     print 'EEG Z1'
     K1 = np.dot(Z1, Z1.T)
+    K1 = K1[:10000, :10000]
     S1, U1 = Factorization(K1)
 
     np.savetxt('../Data/EEGdata/S1.csv', S1, delimiter=',')
@@ -28,6 +30,7 @@ def runEEG():
     Z2 = np.append(Z0, Z1, 1)
 
     K2 = np.dot(Z2, Z2.T)
+    K2 = K2[:10000, :10000]
     S2, U2 = Factorization(K2)
 
     np.savetxt('../Data/EEGdata/S2.csv', S2, delimiter=',')
