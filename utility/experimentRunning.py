@@ -45,8 +45,8 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 
 def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
-    X, Y, Z, B = GenLoading(True)
-    K = np.dot(Z, Z.T)
+    X, Y, Z1, Z2, B = GenLoading(True)
+    K = np.dot(Z1, Z1.T)
     w_linear, alp, l_linear, clf_linear = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                 ldeltamax=ldeltamax, method='linear', selectK=True, regression=True)
     w_lasso, alp, l_lasso, clf_lasso = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
