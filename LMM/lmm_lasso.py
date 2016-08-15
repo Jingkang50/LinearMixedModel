@@ -6,6 +6,7 @@ import scipy.optimize as opt
 import time
 import numpy as np
 
+#https://github.com/yangta1995/LinearMixedModel
 
 def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     """
