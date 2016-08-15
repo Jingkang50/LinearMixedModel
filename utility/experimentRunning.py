@@ -19,44 +19,44 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
         for l in range(1, 2):
             print 'EEG label', l
             Y = y[:, l]
-            # for i in range(3):
-            #     print 'con ', i
-            #     if i == 0:
-            #         K = np.dot(Z0, Z0.T)
-            #     elif i == 1:
-            #         K = np.dot(Z1, Z1.T)
-            #     else:
-            #         Z2 = np.append(Z0, Z1, 1)
-            #         K = np.dot(Z2, Z2.T)
-            #
-            #     Xtr = X[:10000, :]
-            #     Ytr = Y[:10000]
-            #     Xte = X[10000:, :]
-            #     K = K[:10000, :10000]
-            #
-            #     print 'linear'
-            #     w_linear, alp, l_linear, clf_linear = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
-            #                                                 ldeltamax=ldeltamax, method='linear', selectK=False, regression=False, REML=REML)
-            #     print 'lasso'
-            #     w_lasso, alp, l_lasso, clf_lasso = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
-            #                                              ldeltamax=ldeltamax, method='lasso', selectK=False, regression=False, REML=REML)
-            #     print 'ridge'
-            #     w_rd, alp, l_rd, clf_rd = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
-            #                                     ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False, REML=REML)
-            #
-            #     y_pred_linear = predict(Xte, None, l_linear, clf_linear)
-            #     y_pred_lasso = predict(Xte, None, l_lasso, clf_lasso)
-            #     y_pred_rd = predict(Xte, None, l_rd, clf_rd)
-            #
-            #     m = []
-            #     m.append(y_pred_linear)
-            #     m.append(y_pred_lasso)
-            #     m.append(y_pred_rd)
-            #     m = np.array(m)
-            #     if REML:
-            #         np.savetxt('../results/EEGResult_REML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
-            #     else:
-            #         np.savetxt('../results/EEGResult_ML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
+            for i in range(3):
+                print 'con ', i
+                if i == 0:
+                    K = np.dot(Z0, Z0.T)
+                elif i == 1:
+                    K = np.dot(Z1, Z1.T)
+                else:
+                    Z2 = np.append(Z0, Z1, 1)
+                    K = np.dot(Z2, Z2.T)
+
+                Xtr = X[:10000, :]
+                Ytr = Y[:10000]
+                Xte = X[10000:, :]
+                K = K[:10000, :10000]
+
+                print 'linear'
+                w_linear, alp, l_linear, clf_linear = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                            ldeltamax=ldeltamax, method='linear', selectK=False, regression=False, REML=REML)
+                print 'lasso'
+                w_lasso, alp, l_lasso, clf_lasso = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                         ldeltamax=ldeltamax, method='lasso', selectK=False, regression=False, REML=REML)
+                print 'ridge'
+                w_rd, alp, l_rd, clf_rd = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False, REML=REML)
+
+                y_pred_linear = predict(Xte, None, l_linear, clf_linear)
+                y_pred_lasso = predict(Xte, None, l_lasso, clf_lasso)
+                y_pred_rd = predict(Xte, None, l_rd, clf_rd)
+
+                m = []
+                m.append(y_pred_linear)
+                m.append(y_pred_lasso)
+                m.append(y_pred_rd)
+                m = np.array(m)
+                if REML:
+                    np.savetxt('../results/EEGResult_REML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
+                else:
+                    np.savetxt('../results/EEGResult_ML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
 
             KList = [np.dot(Z0, Z0.T)[:10000, :10000], np.dot(Z1, Z1.T)[:10000, :10000]]
             Xtr = X[:10000, :]
@@ -134,5 +134,5 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 
 if __name__ == '__main__':
-    # runGenome(1000, -10, 10)
+    runGenome(1000, -10, 10)
     runEEG(1000, -10, 10)
