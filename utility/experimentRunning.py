@@ -31,6 +31,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
             Xtr = X[:10000, :]
             Ytr = Y[:10000]
             Xte = X[10000:, :]
+            K = K[:10000, :10000]
 
             print 'linear'
             w_linear, alp, l_linear, clf_linear = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
@@ -77,7 +78,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
         m.append(y_pred_lasso)
         m.append(y_pred_rd)
         m = np.array(m)
-        np.savetxt('../results/EEGResult_label_'+str(l+1)+'_con_'+str(3)+'.csv', m, delimiter=',')
+        np.savetxt('../results/EEGResult_label_'+str(l+1)+'_con_'+str(4)+'.csv', m, delimiter=',')
 
 
 
@@ -115,7 +116,7 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
     m.append(w_lasso)
     m.append(w_rd)
     m = np.array(m)
-    np.savetxt('../results/genomeResult_con_'+str(3)+'.csv', m, delimiter=',')
+    np.savetxt('../results/genomeResult_con_'+str(4)+'.csv', m, delimiter=',')
 
 
 if __name__ == '__main__':
