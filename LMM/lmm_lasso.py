@@ -212,7 +212,7 @@ def nLLeval(ldelta, Uy, S, REML=True):
 
     if REML:
         d = 1
-        nLL += 0.5 * (d * scipy.log(2.0 * scipy.pi) - scipy.log(scipy.trace(Sd)))
+        nLL += 0.5 * (d * scipy.log(2.0 * scipy.pi) - scipy.log(scipy.sum(Sd)))
 
     return nLL
 
