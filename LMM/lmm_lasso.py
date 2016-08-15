@@ -283,7 +283,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
             if regression:
                 scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             else:
-                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5)
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
@@ -296,12 +296,12 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         breg = 0
         for reg in regList:
             w = train_linear(X, Y, reg, method, regression)
-            k = len(np.where(w > 0.2 )[0])
-            s = np.abs(k-K)
-            # if k < K:
-            #     s = np.inf
-            # else:
-            #     s = np.abs(k - K)
+            k = len(np.where(w > 0.01 )[0])
+            # s = np.abs(k-K)
+            if k < K:
+                s = np.inf
+            else:
+                s = np.abs(k - K)
             print reg, s
             ss.append(s)
             if s < b:

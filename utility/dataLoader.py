@@ -54,6 +54,14 @@ def GenLoadingKSU(i):
     S = np.loadtxt('../Data/ATdata/S'+str(i)+'.csv', delimiter=',')
     return K, U, S
 
+def GenLoadingCausal():
+    Bdata = np.loadtxt('../Data/ATdata/snps.n.pheno.causal.csv', delimiter=',')
+    B = np.asarray(Bdata)
+    return B[:,0]
+    # r = np.zeros((52172,))
+    # for i in range(B.shape[0]):
+    #     r[B[i,0]] = 1
+    # return r
 
 # dataLoading('../Data/EEGdata.csv')
 

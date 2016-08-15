@@ -5,6 +5,40 @@ from sklearn.metrics import precision_recall_curve as prc
 from sklearn.metrics import roc_curve
 from sklearn.metrics import accuracy_score
 import numpy as np
+from dataLoader import EEGLoading, GenLoading, GenLoadingCausal
+
+def getPositions(l):
+    text = [line.strip() for line in open('../Data/ATdata/athaliana.snps.chromPositionInfo.txt')][1]
+    # print 'This position information is only for AT'
+    pos = text.split()[:l]
+    pos = [int(k) for k in pos]
+    return pos
+
+def getNearbyIndex(k, positions, nearby):
+    k = int(k)
+    mini = k
+    maxi = k
+    pos = positions[k]
+    while mini>=1 and abs(positions[mini] - pos) < nearby:
+        mini -=1
+    l = len(positions)
+    while maxi<l-2 and abs(positions[maxi] - pos) < nearby:
+        maxi += 1
+    return mini, maxi
+
+def gwas_roc(weights, causal_snps, positions=None, nearby=1000):
+    score = np.array(weights)
+    label = np.zeros(len(weights))
+
+    if positions is None:
+        positions = getPositions(len(score))
+    for k in causal_snps:
+        mini, maxi = getNearbyIndex(k, positions, nearby)
+        i = np.argmax(score[mini:maxi])
+        label[mini+i] = 1
+    fpr, tpr, t = roc_curve(label, score)
+
+    return fpr, tpr
 
 def precision_recall(beta_true, beta_pred):
     b_true = beta_true!=0
@@ -12,13 +46,11 @@ def precision_recall(beta_true, beta_pred):
     p, r, f, s = prfs(b_true, b_pred, pos_label=1)
     return p, r
 
-def precison_recall_curve(beta_true, beta_pred_list, labels):
+def Roc_curve(beta_true, beta_pred_list, labels):
     from matplotlib import pyplot as plt
 
-    # beta_pred_list = clean(beta_pred_list)
-    b_true = beta_true!=0
     for i in range(len(beta_pred_list)):
-        fpr, tpr, t = roc_curve(b_true, beta_pred_list[i], pos_label=1)
+        fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, nearby=1000)
         plt.plot(fpr, tpr, label=labels[i])
     plt.legend()
     plt.show()
@@ -49,18 +81,32 @@ def accuracy(y_true, y_pred_l):
     # plt.show()
     return r
 
-if __name__ == '__main__':
-    from dataLoader import EEGLoading, GenLoading
-    X, Y, Z, B = GenLoading(True)
-    beta_pred_list = np.loadtxt('../results/genomeResult.csv', delimiter=',')
-    precison_recall_curve(B, beta_pred_list, ['linear', 'L1', 'L2'])
+def evaluationGen():
+    B = GenLoadingCausal()
+    for i in range(4):
+        print '-------------------'
+        print 'Confound ', i
+        beta_pred_list = np.loadtxt('../results/genomeResult_con_'+str(i+1)+'.csv', delimiter=',')
+        Roc_curve(B, beta_pred_list, ['linear', 'L1', 'L2'])
+        print '-------------------'
 
+def evaluationEEG():
     X, Y, Z0, Z1 = EEGLoading()
-    y_pred_list = np.loadtxt('../results/EEGResult.csv', delimiter=',')
-    # print Y.shape
-    # print y_pred_list.shape
-    print accuracy(Y[10000:, 1], y_pred_list)
+    for k in range(2):
+        print '============'
+        print 'Label', k
+        y_true = Y[10000:, k]
+        for i in range(4):
+            print '------------'
+            print 'Confound', i
+            y_pred_list = np.loadtxt('../results/EEGResult_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
+            print accuracy(y_true, y_pred_list)
+            print '------------'
+        print '============'
 
 
+if __name__ == '__main__':
+    evaluationGen()
+    evaluationEEG()
 
 
