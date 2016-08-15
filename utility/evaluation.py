@@ -7,6 +7,17 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 from dataLoader import EEGLoading, GenLoading, GenLoadingCausal
 
+def limitPrediction(l, num):
+    s = sorted(l)
+    t = s[-num]
+    r = []
+    for v in l:
+        if v > t:
+            r.append(v-t)
+        else:
+            r.append(0)
+    return r
+
 def getPositions(l):
     text = [line.strip() for line in open('../Data/ATdata/athaliana.snps.chromPositionInfo.txt')][1]
     # print 'This position information is only for AT'
@@ -27,6 +38,8 @@ def getNearbyIndex(k, positions, nearby):
     return mini, maxi
 
 def gwas_roc(weights, causal_snps, positions=None, nearby=1000):
+    weights = limitPrediction(weights, 1000)
+
     score = np.array(weights)
     label = np.zeros(len(weights))
 
