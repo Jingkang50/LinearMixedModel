@@ -300,7 +300,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         b = np.inf
         breg = 0
         for reg in regList:
-            w = train_linear(X, Y, reg, method, regression)
+            w, rc = train_linear(X, Y, reg, method, regression)
             k = len(np.where(w > 1e-3 )[0])
             # s = np.abs(k-K)
             if k < K:
