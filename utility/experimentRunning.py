@@ -15,8 +15,10 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     X, y, Z0, Z1 = EEGLoading()
 
     for l in range(2):
+        print 'EEG label', l
         Y = y[:, l]
         for i in range(3):
+            print 'con ', i
             K, U, S = EEGLoading_KSU(i)
 
             Xtr = X[:10000, :]
@@ -48,6 +50,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
 def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
     X, Y, Z1, Z2, B = GenLoading(True)
     for i in range(3):
+        print 'Genome', i
         K, U, S = GenLoadingKSU(i)
         w_linear, alp, l_linear, clf_linear = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                     ldeltamax=ldeltamax, method='linear', selectK=True, regression=True, S=S, U=U)
