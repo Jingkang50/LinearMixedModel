@@ -43,7 +43,7 @@ def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     return freq
 
 
-def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True):
+def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True, S=None, U=None):
 
     [n_s, n_f] = X.shape
     assert X.shape[0] == y.shape[0], 'dimensions do not match'
@@ -53,7 +53,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         y = scipy.reshape(y, (n_s, 1))
 
     # train null model
-    S, U, ldelta0 = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax)
+    S, U, ldelta0 = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax, S=S, U=U)
 
     # train lasso on residuals
     delta0 = scipy.exp(ldelta0)
@@ -211,7 +211,7 @@ def nLLeval(ldelta, Uy, S, REML=True):
     return nLL
 
 
-def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
+def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, S=None, U=None):
     """
     train random effects model:
     min_{delta}  1/2(n_s*log(2pi) + logdet(K) + 1/ss * y^T(K + deltaI)^{-1}y,
@@ -231,7 +231,8 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0):
     n_s = y.shape[0]
 
     # rotate data
-    S, U = linalg.eigh(K)
+    if S is None or U is None:
+        S, U = linalg.eigh(K)
 
     Uy = scipy.dot(U.T, y)
 

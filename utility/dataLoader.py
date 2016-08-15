@@ -19,6 +19,12 @@ def EEGLoading():
         Z1[i - 1][G1[i]] = 1
     return X, Y, Z0, Z1
 
+def EEGLoading_KSU(i):
+    K = np.loadtxt('../Data/EEGdata/K'+str(i)+'.csv', delimiter=',')
+    U = np.loadtxt('../Data/EEGdata/U'+str(i)+'.csv', delimiter=',')
+    S = np.loadtxt('../Data/EEGdata/S'+str(i)+'.csv', delimiter=',')
+    return K, U, S
+
 
 def GenLoading(returnB=False):
     Xdata = np.loadtxt('../Data/ATdata/athaliana.snps.all.csv', delimiter=',')
@@ -41,6 +47,12 @@ def GenLoading(returnB=False):
         return X, Y, Z1, Z2
     else:
         return X, Y, Z1, Z2, B
+
+def GenLoadingKSU(i):
+    K = np.loadtxt('../Data/ATdata/K'+str(i)+'.csv', delimiter=',')
+    U = np.loadtxt('../Data/ATdata/U'+str(i)+'.csv', delimiter=',')
+    S = np.loadtxt('../Data/ATdata/S'+str(i)+'.csv', delimiter=',')
+    return K, U, S
 
 
 # dataLoading('../Data/EEGdata.csv')
