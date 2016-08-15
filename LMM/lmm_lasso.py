@@ -75,8 +75,8 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     else:
         if regression:
             regList = []
-            for i in range(10):
-                regList.append(10 ** (i-15))
+            for i in range(20):
+                regList.append(10 ** (i-20))
         else:
             regList = []
             for i in range(10):
