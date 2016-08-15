@@ -2,11 +2,12 @@ __author__ = 'Haohan Wang'
 
 from lmm_lasso import *
 
-#https://github.com/yangta1995/LinearMixedModel
+
+# https://github.com/yangta1995/LinearMixedModel
 
 
-def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True, SList=None, UList=None):
-
+def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000,
+               regression=True, SList=None, UList=None, REML=False):
     [n_s, n_f] = X.shape
     # assert X.shape[0] == y.shape[0], 'dimensions do not match'
     # assert K.shape[0] == K.shape[1], 'dimensions do not match'
@@ -15,7 +16,8 @@ def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5,
         y = scipy.reshape(y, (n_s, 1))
 
     # train null model
-    SList, UList, ldelta0 = train_nullmodel_multi(y, KList, numintervals, ldeltamin, ldeltamax, SList=SList, UList=UList)
+    SList, UList, ldelta0 = train_nullmodel_multi(y, KList, numintervals, ldeltamin, ldeltamax, SList=SList,
+                                                  UList=UList, REML=REML)
 
     # train lasso on residuals
     SUX = X
@@ -45,18 +47,18 @@ def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5,
         if regression:
             regList = []
             for i in range(10):
-                regList.append(10 ** (i-15))
+                regList.append(10 ** (i - 15))
         else:
             regList = []
             for i in range(10):
-                regList.append(10 ** (i-5))
+                regList.append(10 ** (i - 5))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
 
     return w, alpha, ldelta0, clf
 
 
-def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, SList=None, UList=None):
+def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, SList=None, UList=None, REML=False):
     """
     train random effects model:
     min_{delta}  1/2(n_s*log(2pi) + logdet(K) + 1/ss * y^T(K + deltaI)^{-1}y,
@@ -97,7 +99,7 @@ def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5,
         ldeltagrid = scipy.arange(numintervals + 1) / (numintervals * 1.0) * (ldeltamax - ldeltamin) + ldeltamin
         nllmin = scipy.inf
         for i in scipy.arange(numintervals + 1):
-            nllgrid[i] = nLLeval(ldeltagrid[i], Uy, S)
+            nllgrid[i] = nLLeval(ldeltagrid[i], Uy, S, REML)
 
         # find minimum
         nllmin = nllgrid.min()
@@ -107,7 +109,7 @@ def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5,
 
         for i in scipy.arange(numintervals - 1) + 1:
             if (nllgrid[i] < nllgrid[i - 1] and nllgrid[i] < nllgrid[i + 1]):
-                ldeltaopt, nllopt, iter, funcalls = opt.brent(nLLeval, (Uy, S),
+                ldeltaopt, nllopt, iter, funcalls = opt.brent(nLLeval, (Uy, S, REML),
                                                               (ldeltagrid[i - 1], ldeltagrid[i], ldeltagrid[i + 1]),
                                                               full_output=True)
                 if nllopt < nllmin:
@@ -117,5 +119,3 @@ def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5,
         lg_list.append(ldeltaopt_glob)
 
     return SList, UList, lg_list
-
-

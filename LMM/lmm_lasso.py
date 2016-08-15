@@ -43,7 +43,7 @@ def stability_selection(X, K, y, mu, n_reps, f_subset, **kwargs):
     return freq
 
 
-def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True, S=None, U=None):
+def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltamax=5, selectK=True, SK=1000, regression=True, S=None, U=None, REML=False):
 
     [n_s, n_f] = X.shape
     assert X.shape[0] == y.shape[0], 'dimensions do not match'
@@ -53,7 +53,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         y = scipy.reshape(y, (n_s, 1))
 
     # train null model
-    S, U, ldelta0 = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax, S=S, U=U)
+    S, U, ldelta0 = train_nullmodel(y, K, numintervals, ldeltamin, ldeltamax, S=S, U=U, REML=REML)
 
     # train lasso on residuals
     delta0 = scipy.exp(ldelta0)
@@ -211,12 +211,13 @@ def nLLeval(ldelta, Uy, S, REML=True):
     nLL = 0.5 * (n_s * scipy.log(2.0 * scipy.pi) + ldet + n_s + n_s * scipy.log(ss))
 
     if REML:
-        pass
+        d = 1
+        nLL += 0.5 * (d * scipy.log(2.0 * scipy.pi) - scipy.log(scipy.trace(Sd)))
 
     return nLL
 
 
-def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, S=None, U=None):
+def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, S=None, U=None, REML=False):
     """
     train random effects model:
     min_{delta}  1/2(n_s*log(2pi) + logdet(K) + 1/ss * y^T(K + deltaI)^{-1}y,
@@ -246,7 +247,7 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, 
     ldeltagrid = scipy.arange(numintervals + 1) / (numintervals * 1.0) * (ldeltamax - ldeltamin) + ldeltamin
     nllmin = scipy.inf
     for i in scipy.arange(numintervals + 1):
-        nllgrid[i] = nLLeval(ldeltagrid[i], Uy, S)
+        nllgrid[i] = nLLeval(ldeltagrid[i], Uy, S, REML=REML)
 
     # find minimum
     nllmin = nllgrid.min()
@@ -256,7 +257,7 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, 
 
     for i in scipy.arange(numintervals - 1) + 1:
         if (nllgrid[i] < nllgrid[i - 1] and nllgrid[i] < nllgrid[i + 1]):
-            ldeltaopt, nllopt, iter, funcalls = opt.brent(nLLeval, (Uy, S),
+            ldeltaopt, nllopt, iter, funcalls = opt.brent(nLLeval, (Uy, S, REML),
                                                           (ldeltagrid[i - 1], ldeltagrid[i], ldeltagrid[i + 1]),
                                                           full_output=True)
             if nllopt < nllmin:
@@ -301,7 +302,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         breg = 0
         for reg in regList:
             w, rc = train_linear(X, Y, reg, method, regression)
-            k = len(np.where(w > 5e-3 )[0])
+            k = len(np.where(w > 1e-3 )[0])
             # s = np.abs(k-K)
             if k < K:
                 s = np.inf
