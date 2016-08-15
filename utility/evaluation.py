@@ -37,8 +37,8 @@ def getNearbyIndex(k, positions, nearby):
         maxi += 1
     return mini, maxi
 
-def gwas_roc(weights, causal_snps, positions=None, nearby=1000):
-    weights = limitPrediction(weights, 1000)
+def gwas_roc(weights, causal_snps, positions=None, top=1000, nearby=1000):
+    weights = limitPrediction(weights, top)
 
     score = np.array(weights)
     label = np.zeros(len(weights))
@@ -59,11 +59,11 @@ def precision_recall(beta_true, beta_pred):
     p, r, f, s = prfs(b_true, b_pred, pos_label=1)
     return p, r
 
-def Roc_curve(beta_true, beta_pred_list, labels):
+def Roc_curve(beta_true, beta_pred_list, labels, top, nearby):
     from matplotlib import pyplot as plt
 
     for i in range(len(beta_pred_list)):
-        fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, nearby=1000)
+        fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, top=top, nearby=nearby)
         plt.plot(fpr, tpr, label=labels[i])
     plt.legend()
     plt.show()
@@ -94,32 +94,34 @@ def accuracy(y_true, y_pred_l):
     # plt.show()
     return r
 
-def evaluationGen():
+def evaluationGen(top, nearby):
     B = GenLoadingCausal()
-    for i in range(4):
-        print '-------------------'
-        print 'Confound ', i
-        beta_pred_list = np.loadtxt('../results/genomeResult_con_'+str(i+1)+'.csv', delimiter=',')
-        Roc_curve(B, beta_pred_list, ['linear', 'L1', 'L2'])
-        print '-------------------'
+    for t in ['ML', 'REML']:
+        for i in range(4):
+            print '-------------------'
+            print 'Confound ', i
+            beta_pred_list = np.loadtxt('../results/genomeResult_'+t+'_con_'+str(i+1)+'.csv', delimiter=',')
+            Roc_curve(B, beta_pred_list, ['linear', 'L1', 'L2'], top, nearby)
+            print '-------------------'
 
 def evaluationEEG():
     X, Y, Z0, Z1 = EEGLoading()
-    for k in range(2):
-        print '============'
-        print 'Label', k
-        y_true = Y[10000:, k]
-        for i in range(4):
-            print '------------'
-            print 'Confound', i
-            y_pred_list = np.loadtxt('../results/EEGResult_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
-            print accuracy(y_true, y_pred_list)
-            print '------------'
-        print '============'
+    for t in ['ML', 'REML']:
+        for k in range(2):
+            print '============'
+            print 'Label', k
+            y_true = Y[10000:, k]
+            for i in range(4):
+                print '------------'
+                print 'Confound', i
+                y_pred_list = np.loadtxt('../results/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
+                print accuracy(y_true, y_pred_list)
+                print '------------'
+            print '============'
 
 
 if __name__ == '__main__':
-    evaluationGen()
+    evaluationGen(1000, 10000)
     evaluationEEG()
 
 
