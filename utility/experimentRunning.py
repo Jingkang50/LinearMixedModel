@@ -17,8 +17,8 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
     for REML in [True, False]:
         for l in range(1, 2):
-            # print 'EEG label', l
-            # Y = y[:, l]
+            print 'EEG label', l
+            Y = y[:, l]
             # for i in range(3):
             #     print 'con ', i
             #     if i == 0:
