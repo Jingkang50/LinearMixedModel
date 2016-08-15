@@ -5,7 +5,7 @@ from numpy import genfromtxt
 
 
 def EEGLoading():
-    file = np.loadtxt('../Data/EEGdata.csv', delimiter=',')
+    file = np.loadtxt('../Data/EEGdata/EEGdata.csv', delimiter=',')
     data = np.asarray(file)
     X = data[:, 2:13]
     Y = data[:, 13:15]
