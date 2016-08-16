@@ -134,5 +134,5 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 
 if __name__ == '__main__':
-    runGenome(1000, -10, 10)
+    # runGenome(1000, -10, 10)
     runEEG(1000, -10, 10)
