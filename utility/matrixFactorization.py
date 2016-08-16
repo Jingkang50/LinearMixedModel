@@ -41,32 +41,42 @@ def runEEG():
 
 def runGenome():
     X, Y, Z0, Z1 = GenLoading(False)
+    #
+    # print 'AT Z0'
+    # K0 = np.dot(Z0, Z0.T)
+    # S0, U0 = Factorization(K0)
+    #
+    # np.savetxt('../Data/ATdata/K0.csv', K0, delimiter=',')
+    # np.savetxt('../Data/ATdata/S0.csv', S0, delimiter=',')
+    # np.savetxt('../Data/ATdata/U0.csv', U0, delimiter=',')
+    #
+    # print 'AT Z1'
+    # K1 = np.dot(Z1, Z1.T)
+    # S1, U1 = Factorization(K1)
+    #
+    # np.savetxt('../Data/ATdata/K1.csv', K1, delimiter=',')
+    # np.savetxt('../Data/ATdata/S1.csv', S1, delimiter=',')
+    # np.savetxt('../Data/ATdata/U1.csv', U1, delimiter=',')
+    #
+    # print 'AT Z2'
+    # Z2 = np.append(Z0, Z1, 1)
+    #
+    # K2 = np.dot(Z2, Z2.T)
+    # S2, U2 = Factorization(K2)
+    #
+    # np.savetxt('../Data/ATdata/K2.csv', K2, delimiter=',')
+    # np.savetxt('../Data/ATdata/S2.csv', S2, delimiter=',')
+    # np.savetxt('../Data/ATdata/U2.csv', U2, delimiter=',')
 
-    print 'AT Z0'
-    K0 = np.dot(Z0, Z0.T)
-    S0, U0 = Factorization(K0)
+    print 'AT Z4'
 
-    np.savetxt('../Data/ATdata/K0.csv', K0, delimiter=',')
-    np.savetxt('../Data/ATdata/S0.csv', S0, delimiter=',')
-    np.savetxt('../Data/ATdata/U0.csv', U0, delimiter=',')
+    Z4 = Z0 + Z1
+    K4 = np.dot(Z4, Z4.T)
+    S4, U4 = Factorization(K4)
 
-    print 'AT Z1'
-    K1 = np.dot(Z1, Z1.T)
-    S1, U1 = Factorization(K1)
-
-    np.savetxt('../Data/ATdata/K1.csv', K1, delimiter=',')
-    np.savetxt('../Data/ATdata/S1.csv', S1, delimiter=',')
-    np.savetxt('../Data/ATdata/U1.csv', U1, delimiter=',')
-
-    print 'AT Z2'
-    Z2 = np.append(Z0, Z1, 1)
-
-    K2 = np.dot(Z2, Z2.T)
-    S2, U2 = Factorization(K2)
-
-    np.savetxt('../Data/ATdata/K2.csv', K2, delimiter=',')
-    np.savetxt('../Data/ATdata/S2.csv', S2, delimiter=',')
-    np.savetxt('../Data/ATdata/U2.csv', U2, delimiter=',')
+    np.savetxt('../Data/ATdata/K2.csv', K4, delimiter=',')
+    np.savetxt('../Data/ATdata/S2.csv', S4, delimiter=',')
+    np.savetxt('../Data/ATdata/U2.csv', U4, delimiter=',')
 
 
 if __name__ == '__main__':
