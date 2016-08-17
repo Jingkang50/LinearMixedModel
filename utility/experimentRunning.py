@@ -29,6 +29,8 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
             else:
                 Z2 = Z0 + Z1
                 K = np.dot(Z2, Z2.T)
+                
+            K = K[:10000, :10000]
             S, U = np.linalg.eigh(K)
 
             for REML in [True, False]:
@@ -39,7 +41,6 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
                     Xtr = X[:10000, :]
                     Ytr = Y[:10000]
                     Xte = X[10000:, :]
-                    K = K[:10000, :10000]
 
                     print 'linear'
                     w_linear, alp, l_linear, clf_linear = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
