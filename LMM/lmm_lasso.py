@@ -79,8 +79,8 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
                 regList.append(10 ** (i-20))
         else:
             regList = []
-            for i in range(10):
-                regList.append(10 ** (i-5))
+            for i in range(20):
+                regList.append(10 ** (i-15))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
 
@@ -211,7 +211,7 @@ def nLLeval(ldelta, Uy, S, REML=True):
     nLL = 0.5 * (n_s * scipy.log(2.0 * scipy.pi) + ldet + n_s + n_s * scipy.log(ss))
 
     if REML:
-        d = 1
+        d = 11
         nLL += 0.5 * (d * scipy.log(2.0 * scipy.pi) - scipy.log(scipy.sum(Sd)))
 
     return nLL
