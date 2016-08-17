@@ -80,7 +80,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         else:
             regList = []
             for i in range(0, 10):
-                regList.append(10 ** (i-5))
+                regList.append(10 ** (i-15))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
 
