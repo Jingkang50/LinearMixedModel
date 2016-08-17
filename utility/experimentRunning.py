@@ -29,12 +29,12 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
             else:
                 Z2 = Z0 + Z1
                 K = np.dot(Z2, Z2.T)
-                
+
             K = K[:10000, :10000]
             S, U = np.linalg.eigh(K)
 
             for REML in [True, False]:
-                for l in range(1, 2):
+                for l in range(2):
                     print 'EEG label', l
                     Y = y[:, l]
 
@@ -75,7 +75,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
     UList = [U0, U1]
 
     for REML in [True, False]:
-        for l in range(1, 2):
+        for l in range(2):
             print 'EEG label', l
             Y = y[:, l]
             Xtr = X[:10000, :]
