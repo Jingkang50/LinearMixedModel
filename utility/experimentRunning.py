@@ -12,7 +12,7 @@ from evaluation import precision_recall
 methods = ['linear', 'lasso', 'ridge']
 
 
-def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
+def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
     X, y, Z0, Z1 = EEGLoading()
 
 
@@ -30,7 +30,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
                 Z2 = Z0 + Z1
                 K = np.dot(Z2, Z2.T)
 
-            K = K[:10000, :10000]
+            K = K[:nums, :nums]
             S, U = np.linalg.eigh(K)
 
             for REML in [True, False]:
@@ -38,9 +38,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
                     print 'EEG label', l
                     Y = y[:, l]
 
-                    Xtr = X[:10000, :]
-                    Ytr = Y[:10000]
-                    Xte = X[10000:, :]
+                    Xtr = X[:nums, :]
+                    Ytr = Y[:nums]
+                    Xte = X[nums:, :]
 
                     print 'linear'
                     w_linear, alp, l_linear, clf_linear = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
@@ -68,7 +68,7 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
     print 'con 3'
 
-    KList = [np.dot(Z0, Z0.T)[:10000, :10000], np.dot(Z1, Z1.T)[:10000, :10000]]
+    KList = [np.dot(Z0, Z0.T)[:nums, :nums], np.dot(Z1, Z1.T)[:nums, :nums]]
     S0, U0 = np.linalg.eigh(KList[0])
     S1, U1 = np.linalg.eigh(KList[1])
     SList = [S0, S1]
@@ -78,9 +78,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5):
         for l in range(2):
             print 'EEG label', l
             Y = y[:, l]
-            Xtr = X[:10000, :]
-            Ytr = Y[:10000]
-            Xte = X[10000:, :]
+            Xtr = X[:nums, :]
+            Ytr = Y[:nums]
+            Xte = X[nums:, :]
 
             print 'linear'
             w_linear, alp, l_linear, clf_linear = trainMulti(Xtr, KList, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
@@ -156,4 +156,4 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
-    runEEG(1000, -10, 10)
+    runEEG(1000, -10, 10, 6000)
