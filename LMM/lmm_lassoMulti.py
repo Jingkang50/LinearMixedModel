@@ -50,8 +50,8 @@ def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5,
                 regList.append(10 ** (i-20))
         else:
             regList = []
-            for i in range(20):
-                regList.append(10 ** (i-15))
+            for i in range(0, 100, 10):
+                regList.append(10 ** (i-50))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
 

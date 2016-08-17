@@ -79,8 +79,8 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
                 regList.append(10 ** (i-20))
         else:
             regList = []
-            for i in range(20):
-                regList.append(10 ** (i-15))
+            for i in range(0, 100, 10):
+                regList.append(10 ** (i-50))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
 
@@ -271,7 +271,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
     ss = []
     if not selectK:
         from sklearn import cross_validation
-        b = np.inf
+        b = -np.inf
         breg = 0
         for reg in regList:
             if method == 'lasso':
@@ -293,7 +293,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
-            if s < b:
+            if s > b:
                 b = s
                 breg = reg
         return breg, ss
