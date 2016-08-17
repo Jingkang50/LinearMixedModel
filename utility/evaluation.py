@@ -40,19 +40,18 @@ def getNearbyIndex(k, positions, nearby):
 
 def gwas_roc(weights, causal_snps, positions=None, top=1000, nearby=1000):
     weights = limitPrediction(weights, top)
-
     score = np.array(weights)
     label = np.zeros(len(weights))
-
     if positions is None:
         positions = getPositions(len(score))
     for k in causal_snps:
         mini, maxi = getNearbyIndex(k, positions, nearby)
         i = np.argmax(score[mini:maxi])
         label[mini+i] = 1
-    fpr, tpr, t = roc_curve(label, score)
-
-    return fpr, tpr
+    # fpr, tpr, t = roc_curve(label, score)
+    p, r, t = prc(label, score)
+    # return fpr, tpr
+    return r, p
 
 def precision_recall(beta_true, beta_pred):
     b_true = beta_true!=0
@@ -70,7 +69,7 @@ def Roc_curve(beta_true, beta_pred_list, labels, top, nearby):
         fpr_list.append(fpr)
         tpr_list.append(tpr)
     plt.legend()
-    # plt.show()
+    plt.show()
     auc_list = []
     for j in range(len(fpr_list)):
         # print auc(fpr_list[j], tpr_list[j])
@@ -109,21 +108,18 @@ def evaluationGen(top, nearby):
     compare_list = []
     method = ['linear', 'L1', 'L2']
     for t in ['ML', 'REML']:
-        for i in range(4):
+        for i in range(5):
             print '-------------------'
             print 'Confound ', i
             beta_pred_list = np.loadtxt('../results/genomeResult_'+t+'_con_'+str(i+1)+'.csv', delimiter=',')
             auc = Roc_curve(B, beta_pred_list, method, top, nearby)
             auc_arr = np.asarray(auc)
             print method[np.argmax(auc_arr)]
-            print '-------------------'
             auc_list.append(auc)
-            # compare_comp = []
-            # compare_comp.append(t)
-            # compare_comp.append(i)
             compare_list.append(method[np.argmax(auc)])
-            # compare_list.append(compare_comp)
-            # print compare_list
+            compare_list.append(auc_arr[0])
+            compare_list.append(auc_arr[1])
+            compare_list.append(auc_arr[2])
     np.savetxt('../Data/GenEva.csv', auc_list, '%5.4f' ,delimiter=',')
     return compare_list
     # np.savetxt('../Data/GenComp.txt', np.asarray(compare_list), delimiter=',',fmt='%s')
@@ -148,23 +144,21 @@ def evaluationEEG():
                 print '------------'
                 pre_list.append(accuracy(y_true, y_pred_list))
                 compare_list.append(method[np.argmax(accuracy(y_true, y_pred_list))])
-                # compare_list.append(t)
-                # compare_list.append(k)
-                # compare_list.append(i)
             print '============'
     np.savetxt('../Data/EEGEva.csv', pre_list, '%5.4f', delimiter=',')
-    np.savetxt('../Data/EEGComp.txt', np.asarray(compare_list), delimiter=',', fmt='%s')
+    # np.savetxt('../Data/EEGComp.txt', np.asarray(compare_list), delimiter=',', fmt='%s')
 
 if __name__ == '__main__':
-    full_comp = []
-    # for i in range(100,1000,100):
-    #     for j in range(5000, 100000, 5000):
+    # full_comp = []
+    # for i in range(300,1100,100):
+    #     for j in range(5000, 105000, 5000):
     #         full_comp.append([i,j]+evaluationGen(i, j))
-    #     if i%300 == 0:
-    #         np.savetxt('../Data/GenComp'+str(i)+'.txt', np.asarray(full_comp), delimiter=',',fmt='%s')
-    #
-    # np.savetxt('../Data/GenComp.txt', np.asarray(full_comp), delimiter=',', fmt='%s')
+    #         print i
+    #     np.savetxt('../Data/GenComp'+str(i)+'.txt', np.asarray(full_comp), delimiter=',',fmt='%s')
+
     full_comp = evaluationGen(1000, 50000)
+    np.savetxt('../Data/GenComp_1000_50000.txt', np.asarray(full_comp), delimiter=',', fmt='%s')
+
     evaluationEEG()
 
 
