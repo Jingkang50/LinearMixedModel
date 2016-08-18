@@ -65,11 +65,11 @@ def Roc_curve(beta_true, beta_pred_list, labels, top, nearby):
     tpr_list = []
     for i in range(len(beta_pred_list)):
         fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, top=top, nearby=nearby)
-        plt.plot(fpr, tpr, label=labels[i])
+        # plt.plot(fpr, tpr, label=labels[i])
         fpr_list.append(fpr)
         tpr_list.append(tpr)
-    plt.legend()
-    plt.show()
+    # plt.legend()
+    # plt.show()
     auc_list = []
     for j in range(len(fpr_list)):
         # print auc(fpr_list[j], tpr_list[j])
@@ -134,11 +134,11 @@ def evaluationEEG():
         for k in range(2):
             print '============'
             print 'Label', k
-            y_true = Y[10000:, k]
-            for i in range(4):
+            for i in range(5):
                 print '------------'
                 print 'Confound', i
                 y_pred_list = np.loadtxt('../results/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
+                y_true = Y[-y_pred_list.shape[1]:, k]
                 print accuracy(y_true, y_pred_list)
                 print method[np.argmax(accuracy(y_true, y_pred_list))]
                 print '------------'
@@ -154,10 +154,10 @@ if __name__ == '__main__':
     #     for j in range(5000, 105000, 5000):
     #         full_comp.append([i,j]+evaluationGen(i, j))
     #         print i
-    #     np.savetxt('../Data/GenComp'+str(i)+'.txt', np.asarray(full_comp), delimiter=',',fmt='%s')
+    # np.savetxt('../Data/GenCompPR.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
 
-    full_comp = evaluationGen(1000, 50000)
-    np.savetxt('../Data/GenComp_1000_50000.txt', np.asarray(full_comp), delimiter=',', fmt='%s')
+    # full_comp = evaluationGen(1000, 50000)
+    # np.savetxt('../Data/GenComp_1000_50000.txt', np.asarray(full_comp), delimiter=',', fmt='%s')
 
     evaluationEEG()
 
