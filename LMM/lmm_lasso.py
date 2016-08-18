@@ -70,6 +70,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     print SUy.shape
 
     if method == 'linear':
+        print SUX
         w, clf = train_linear(SUX, SUy, mu, method, regression)
         alpha = 0
         print w
@@ -81,7 +82,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
         else:
             regList = []
             for i in range(0, 10):
-                regList.append(10 ** i)
+                regList.append(10 ** (i-10))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
         print w
@@ -268,6 +269,10 @@ def train_nullmodel(y, K, numintervals=500, ldeltamin=-5, ldeltamax=5, scale=0, 
 
     return S, U, ldeltaopt_glob
 
+def func(clf, X, y):
+    y1 = clf.predict(X)
+    return 1 - np.mean(y!=y1)
+
 
 def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
     ss = []
@@ -277,21 +282,25 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         breg = 0
         for reg in regList:
             if method == 'lasso':
-                from sklearn.linear_model import Lasso
-                clf = Lasso(alpha=reg)
+                if regression:
+                    from sklearn.linear_model import Lasso
+                    clf = Lasso(alpha=reg)
+                else:
+                    from sklearn.linear_model import LogisticRegression
+                    clf = LogisticRegression(penalty='l1', C=1/reg)
             elif method == 'ridge':
                 if regression:
                     from sklearn.linear_model import Ridge
                     clf = Ridge(alpha=reg)
                 else:
-                    from sklearn.linear_model import RidgeClassifier
-                    clf = RidgeClassifier(alpha=reg)
+                    from sklearn.linear_model import LogisticRegression
+                    clf = LogisticRegression(penalty='l2', C=1/reg)
             else:
                 clf = None
             if regression:
                 scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring='mean_squared_error')
             else:
-                scores = cross_validation.cross_val_score(clf, X, Y, cv=5)
+                scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring=func)
             s = np.mean(np.abs(scores))
             print reg, s
             ss.append(s)
