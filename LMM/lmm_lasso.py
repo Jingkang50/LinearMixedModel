@@ -72,6 +72,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     if method == 'linear':
         w, clf = train_linear(SUX, SUy, mu, method, regression)
         alpha = 0
+        print w
     else:
         if regression:
             regList = []
@@ -83,6 +84,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
                 regList.append(10 ** i)
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
+        print w
 
     return w, alpha, ldelta0, clf
 
