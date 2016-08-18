@@ -81,7 +81,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
                 regList.append(10 ** (i-20))
         else:
             regList = []
-            for i in range(0, 10):
+            for i in range(0, 5):
                 regList.append(10 ** (i-10))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
@@ -159,13 +159,13 @@ def train_linear(X, y, mu=1e-4, method='linear', regression=True):
             w = lr.coef_
             return w.reshape((w.shape[1],)), lr
         elif method == 'lasso':
-            from sklearn.linear_model import Lasso
-            lasso = Lasso(alpha=mu)
+            from sklearn.linear_model import LogisticRegression
+            lasso = LogisticRegression(penalty='l1', C=1/mu)
             lasso.fit(X, y)
             return lasso.coef_, lasso
         elif method == 'ridge':
-            from sklearn.linear_model import RidgeClassifier
-            rc = RidgeClassifier(alpha=mu)
+            from sklearn.linear_model import LogisticRegression
+            rc = LogisticRegression(penalty='l2', C=1/mu)
             rc.fit(X, y)
             return rc.coef_[0], rc
     else:

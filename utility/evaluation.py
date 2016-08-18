@@ -2,7 +2,7 @@ __author__ = 'Haohan Wang'
 
 from sklearn.metrics import precision_recall_fscore_support as prfs
 from sklearn.metrics import precision_recall_curve as prc
-from sklearn.metrics import roc_curve
+from sklearn.metrics import roc_curve, precision_score, recall_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import auc
 import numpy as np
@@ -102,6 +102,21 @@ def accuracy(y_true, y_pred_l):
     # plt.show()
     return r
 
+def pr_score(y_true, y_pred_l):
+    from matplotlib import pyplot as plt
+    result = []
+    x = xrange(len(y_true))
+    c = -1
+    ls = ['linear', 'L1', 'L2']
+    for y_pred in y_pred_l:
+        c += 1
+        m = precision_score(y_true, y_pred.astype(int))
+        result.append(m)
+        # plt.plot(p, r, label=ls[c])
+    # plt.legend()
+    # plt.show()
+    return result
+
 def evaluationGen(top, nearby):
     B = GenLoadingCausal()
     auc_list = []
@@ -137,15 +152,15 @@ def evaluationEEG():
             for i in range(5):
                 print '------------'
                 print 'Confound', i
-                y_pred_list = np.loadtxt('../results/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
+                y_pred_list = np.loadtxt('../results0/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
                 y_true = Y[-y_pred_list.shape[1]:, k]
-                print accuracy(y_true, y_pred_list)
+                print pr_score(y_true, y_pred_list)
                 print method[np.argmax(accuracy(y_true, y_pred_list))]
                 print '------------'
                 pre_list.append(accuracy(y_true, y_pred_list))
                 compare_list.append(method[np.argmax(accuracy(y_true, y_pred_list))])
             print '============'
-    np.savetxt('../Data/EEGEva.csv', pre_list, '%5.4f', delimiter=',')
+    # np.savetxt('../Data/EEGEva.csv', pre_list, '%5.4f', delimiter=',')
     # np.savetxt('../Data/EEGComp.txt', np.asarray(compare_list), delimiter=',', fmt='%s')
 
 if __name__ == '__main__':

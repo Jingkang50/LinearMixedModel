@@ -12,7 +12,7 @@ from evaluation import precision_recall
 methods = ['linear', 'lasso', 'ridge']
 
 
-def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
+def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000, z=0):
     X, y, Z0, Z1 = EEGLoading()
 
 
@@ -63,9 +63,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
                     m.append(y_pred_rd)
                     m = np.array(m)
                     if REML:
-                        np.savetxt('../results/EEGResult_REML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
+                        np.savetxt('../results'+str(z)+'/EEGResult_REML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
                     else:
-                        np.savetxt('../results/EEGResult_ML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
+                        np.savetxt('../results'+str(z)+'/EEGResult_ML_label_'+str(l+1)+'_con_'+str(i+1)+'.csv', m, delimiter=',')
 
     print 'con 3'
 
@@ -112,9 +112,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
             m.append(y_pred_rd)
             m = np.array(m)
             if REML:
-                np.savetxt('../results/EEGResult_REML_label_'+str(l+1)+'_con_'+str(4)+'.csv', m, delimiter=',')
+                np.savetxt('../results'+str(z)+'/EEGResult_REML_label_'+str(l+1)+'_con_'+str(4)+'.csv', m, delimiter=',')
             else:
-                np.savetxt('../results/EEGResult_ML_label_'+str(l+1)+'_con_'+str(4)+'.csv', m, delimiter=',')
+                np.savetxt('../results'+str(z)+'/EEGResult_ML_label_'+str(l+1)+'_con_'+str(4)+'.csv', m, delimiter=',')
 
 
 
@@ -166,4 +166,8 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
-    runEEG(1000, -10, 10, 6000)
+    runEEG(1000, -10, 10, 2000, 2)
+    runEEG(1000, -10, 10, 4000, 4)
+    runEEG(1000, -10, 10, 6000, 6)
+    runEEG(1000, -10, 10, 8000, 8)
+    runEEG(1000, -10, 10, 10000, 0)
