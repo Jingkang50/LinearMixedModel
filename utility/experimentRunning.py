@@ -29,9 +29,10 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
             else:
                 Z2 = Z0 + Z1
                 K = np.dot(Z2, Z2.T)
-
+            Kv = K[nums:, nums:]
             K = K[:nums, :nums]
             S, U = np.linalg.eigh(K)
+            Sv, Uv = np.linalg.eigh(Kv)
 
             for REML in [True, False]:
                 for l in range(2):
@@ -52,9 +53,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
                     w_rd, alp, l_rd, clf_rd = train(Xtr, K, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                                     ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False, REML=REML, S=S, U=U)
 
-                    y_pred_linear = predict(Xte, None, l_linear, clf_linear)
-                    y_pred_lasso = predict(Xte, None, l_lasso, clf_lasso)
-                    y_pred_rd = predict(Xte, None, l_rd, clf_rd)
+                    y_pred_linear = predict(Xte, Sv, Uv, l_linear, clf_linear)
+                    y_pred_lasso = predict(Xte, Sv, Uv, l_lasso, clf_lasso)
+                    y_pred_rd = predict(Xte, Sv, Uv, l_rd, clf_rd)
 
                     m = []
                     m.append(y_pred_linear)
@@ -68,11 +69,20 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
 
     print 'con 3'
 
-    KList = [np.dot(Z0, Z0.T)[:nums, :nums], np.dot(Z1, Z1.T)[:nums, :nums]]
+    K0 = np.dot(Z0, Z0.T)
+    K1 = np.dot(Z1, Z1.T)
+
+    KList = [K0[:nums, :nums], K1[:nums, :nums]]
     S0, U0 = np.linalg.eigh(KList[0])
     S1, U1 = np.linalg.eigh(KList[1])
     SList = [S0, S1]
     UList = [U0, U1]
+    KvList = [K0[nums:, nums:], K1[nums:, nums:]]
+    Sv0, Uv0 = np.linalg.eigh(KvList[0])
+    Sv1, Uv1 = np.linalg.eigh(KvList[1])
+    SvList = [Sv0, Sv1]
+    UvList = [Uv0, Uv1]
+
 
     for REML in [True, False]:
         for l in range(2):
@@ -92,9 +102,9 @@ def runEEG(numintervals=100, ldeltamin=-5, ldeltamax=5, nums=10000):
             w_rd, alp, l_rd, clf_rd = trainMulti(Xtr, KList, Ytr, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
                                             ldeltamax=ldeltamax, method='ridge', selectK=False, regression=False, SList=SList, UList=UList)
 
-            y_pred_linear = predict(Xte, None, l_linear, clf_linear)
-            y_pred_lasso = predict(Xte, None, l_lasso, clf_lasso)
-            y_pred_rd = predict(Xte, None, l_rd, clf_rd)
+            y_pred_linear = predictMulti(Xte, SvList, UvList, l_linear, clf_linear)
+            y_pred_lasso = predictMulti(Xte, SvList, UvList, l_lasso, clf_lasso)
+            y_pred_rd = predictMulti(Xte, SvList, UvList, l_rd, clf_rd)
 
             m = []
             m.append(y_pred_linear)
@@ -156,4 +166,4 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
-    runEEG(1000, -10, 10, 2000)
+    runEEG(1000, -10, 10, 6000)

@@ -119,3 +119,20 @@ def train_nullmodel_multi(y, KList, numintervals=500, ldeltamin=-5, ldeltamax=5,
         lg_list.append(ldeltaopt_glob)
 
     return SList, UList, lg_list
+
+
+def predictMulti(X, SL, UL, deltas, clf):
+    SUX = X
+    [n_s, n_f] = X.shape
+    for i in range(len(SL)):
+        S = SL[i]
+        U = UL[i]
+        ldelta = deltas[i]
+        delta0 = scipy.exp(ldelta)
+        Sdi = 1. / (S + delta0)
+        Sdi_sqrt = scipy.sqrt(Sdi)
+        SUX = scipy.dot(U.T, SUX)
+        SUX = SUX * scipy.tile(Sdi_sqrt, (n_f, 1)).T
+
+    y = clf.predict(SUX)
+    return y
