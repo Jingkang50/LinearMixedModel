@@ -70,8 +70,8 @@ def Roc_curve(beta_true, beta_pred_list, labels, top, nearby, method):
         fpr_list.append(fpr)
         tpr_list.append(tpr)
     plt.legend()
-    # plt.show()
-    fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
+    plt.show()
+    # fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
     plt.close()
     auc_list = []
     for j in range(len(fpr_list)):
@@ -202,7 +202,7 @@ def evaluationGen_chosen():
 
 if __name__ == '__main__':
     full_comp = []
-    for i in range(0,200,20):
+    for i in range(150,153,20):
         full_comp.append([i]+evaluationRan(i,1))
         print i
         np.savetxt('../Data/RandomDataPR_'+str(i)+'.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
