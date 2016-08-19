@@ -176,7 +176,10 @@ def evaluationEEG():
             for i in range(5):
                 print '------------'
                 print 'Confound', i
+<<<<<<< HEAD
                 y_pred_list = np.loadtxt('../results/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
+=======
+>>>>>>> origin/master
                 y_pred_list = np.loadtxt('../results2/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
                 y_true = Y[-y_pred_list.shape[1]:, k]
                 print pr_score(y_true, y_pred_list)
