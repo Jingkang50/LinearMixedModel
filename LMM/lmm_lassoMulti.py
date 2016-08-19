@@ -38,7 +38,7 @@ def trainMulti(X, KList, y, mu, method='linear', numintervals=100, ldeltamin=-5,
         else:
             SUy = y.astype(int).reshape(y.shape[0])
 
-    print SUy.shape
+    # print SUy.shape
 
     if method == 'linear':
         w, clf = train_linear(SUX, SUy, mu, method, regression)

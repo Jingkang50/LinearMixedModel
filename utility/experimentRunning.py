@@ -166,8 +166,26 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
+    print '=================='
+    print 'GROUP 2'
+    print '=================='
     runEEG(1000, -10, 10, 2000, 2)
+    print '=================='
+    print 'GROUP 4'
+    print '=================='
     runEEG(1000, -10, 10, 4000, 4)
+    print '=================='
+    print 'GROUP 6'
+    print '=================='
     runEEG(1000, -10, 10, 6000, 6)
+    print '=================='
+    print 'GROUP 8'
+    print '=================='
     runEEG(1000, -10, 10, 8000, 8)
+    print '=================='
+    print 'GROUP 0'
+    print '=================='
     runEEG(1000, -10, 10, 10000, 0)
+    print '=================='
+    print 'DONE'
+    print '=================='

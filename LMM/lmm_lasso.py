@@ -70,10 +70,10 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
     print SUy.shape
 
     if method == 'linear':
-        print SUX
+        # print SUX
         w, clf = train_linear(SUX, SUy, mu, method, regression)
         alpha = 0
-        print w
+        # print w
     else:
         if regression:
             regList = []
@@ -85,7 +85,7 @@ def train(X, K, y, mu, method='linear', numintervals=100, ldeltamin=-5, ldeltama
                 regList.append(10 ** (i-10))
         alpha, ss = cv_train(SUX, SUy, regList, method, selectK, K=SK, regression=regression)
         w, clf = train_linear(SUX, SUy, alpha, method, regression)
-        print w
+        # print w
 
     return w, alpha, ldelta0, clf
 
@@ -301,7 +301,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
             else:
                 scores = cross_validation.cross_val_score(clf, X, Y, cv=5, scoring=func)
             s = np.mean(np.abs(scores))
-            print reg, s
+            # print reg, s
             ss.append(s)
             if s > b:
                 b = s
@@ -318,7 +318,7 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
                 s = np.inf
             else:
                 s = np.abs(k - K)
-            print reg, s, np.mean(w)
+            # print reg, s, np.mean(w)
             ss.append(s)
             if s < b:
                 b = s
