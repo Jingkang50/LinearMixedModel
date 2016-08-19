@@ -63,16 +63,16 @@ def Roc_curve(beta_true, beta_pred_list, labels, top, nearby, method):
     from matplotlib import pyplot as plt
     fpr_list = []
     tpr_list = []
-    # fig = plt.figure()
+    fig = plt.figure()
     for i in range(len(beta_pred_list)):
         fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, top=top, nearby=nearby)
-        # plt.plot(fpr, tpr, label=labels[i])
+        plt.plot(fpr, tpr, label=labels[i])
         fpr_list.append(fpr)
         tpr_list.append(tpr)
-    # plt.legend()
+    plt.legend()
     # plt.show()
-    # fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
-    # plt.close()
+    fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
+    plt.close()
     auc_list = []
     for j in range(len(fpr_list)):
         # print auc(fpr_list[j], tpr_list[j])
