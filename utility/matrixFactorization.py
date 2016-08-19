@@ -107,11 +107,8 @@ def runRan():
     np.savetxt('../Data/RandomData/S2.csv', S2, delimiter=',')
     np.savetxt('../Data/RandomData/U2.csv', U2, delimiter=',')
 
-<<<<<<< HEAD
     print 'Random Data Z4'
 
-=======
->>>>>>> origin/master
     Z4 = Z0 + Z1
     K4 = np.dot(Z4, Z4.T)
     S4, U4 = Factorization(K4)
