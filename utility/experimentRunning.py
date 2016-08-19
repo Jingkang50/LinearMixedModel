@@ -189,8 +189,8 @@ def runRandomData(numintervals=100, ldeltamin=-5, ldeltamax=5):
                     np.savetxt('../results/RandomDataResult_ML_con_'+str(i+1)+'.csv', m, delimiter=',')
 
         print 'Random 3'
-        K0, U0, S0 = GenLoadingKSU(0)
-        K1, U1, S1 = GenLoadingKSU(1)
+        K0, U0, S0 = RanLoadingKSU(0)
+        K1, U1, S1 = RanLoadingKSU(1)
         KList = [K0, K1]
         UList = [U0, U1]
         SList = [S0, S1]
@@ -213,35 +213,32 @@ def runRandomData(numintervals=100, ldeltamin=-5, ldeltamax=5):
 
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
-<<<<<<< HEAD
     # runEEG(1000, -10, 10, 2000, 2)
     # runEEG(1000, -10, 10, 4000, 4)
     # runEEG(1000, -10, 10, 6000, 6)
     # runEEG(1000, -10, 10, 8000, 8)
     # runEEG(1000, -10, 10, 10000, 0)
     runRandomData(1000, -10 , 10)
-=======
-    print '=================='
-    print 'GROUP 2'
-    print '=================='
-    runEEG(1000, -10, 10, 2000, 2)
-    print '=================='
-    print 'GROUP 4'
-    print '=================='
-    runEEG(1000, -10, 10, 4000, 4)
-    print '=================='
-    print 'GROUP 6'
-    print '=================='
-    runEEG(1000, -10, 10, 6000, 6)
-    print '=================='
-    print 'GROUP 8'
-    print '=================='
-    runEEG(1000, -10, 10, 8000, 8)
-    print '=================='
-    print 'GROUP 0'
-    print '=================='
-    runEEG(1000, -10, 10, 10000, 0)
-    print '=================='
-    print 'DONE'
-    print '=================='
->>>>>>> origin/master
+    # print '=================='
+    # print 'GROUP 2'
+    # print '=================='
+    # runEEG(1000, -10, 10, 2000, 2)
+    # print '=================='
+    # print 'GROUP 4'
+    # print '=================='
+    # runEEG(1000, -10, 10, 4000, 4)
+    # print '=================='
+    # print 'GROUP 6'
+    # print '=================='
+    # runEEG(1000, -10, 10, 6000, 6)
+    # print '=================='
+    # print 'GROUP 8'
+    # print '=================='
+    # runEEG(1000, -10, 10, 8000, 8)
+    # print '=================='
+    # print 'GROUP 0'
+    # print '=================='
+    # runEEG(1000, -10, 10, 10000, 0)
+    # print '=================='
+    # print 'DONE'
+    # print '=================='

@@ -5,23 +5,23 @@ import scipy.sparse as sparse
 import math
 
 # Size configuration
-n = 100	         # Case Number
+n = 1000	         # Case Number
 p = 10000	     # Feature
 dense = 0.1      # density
 
 # config
 clusterNum1 = 5
 clusterNum2 = 5
-pe = 0.3
-pg1 = 0.3
-pg2 = 0.3
+pe = 0.2
+pg1 = 0.4
+pg2 = 0.4
 
 np.set_printoptions(precision=4,
                        threshold=10000,
                        linewidth=150)
 
 # generate a random X matrix
-X = sparse.random(n, p, density=dense)    # X is a n x p matrix with the value from 0 to
+X = sparse.random(n, p, density=0.5)    # X is a n x p matrix with the value from 0 to
 X = X.A
 X = np.around(X, decimals= 3)
 

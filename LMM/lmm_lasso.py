@@ -273,7 +273,7 @@ def func(clf, X, y):
     return 1 - np.mean(y!=y1)
 
 
-def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
+def cv_train(X, Y, regList, method, selectK=False, K=100, regression=True):
     ss = []
     if not selectK:
         from sklearn import cross_validation
@@ -312,13 +312,13 @@ def cv_train(X, Y, regList, method, selectK=False, K=1000, regression=True):
         breg = 0
         for reg in regList:
             w, rc = train_linear(X, Y, reg, method, regression)
-            k = len(np.where(w > 1e-3 )[0])
+            k = len(np.where(w > 1e-5 )[0])
             # s = np.abs(k-K)
             if k < K:
                 s = np.inf
             else:
                 s = np.abs(k - K)
-            # print reg, s, np.mean(w)
+            print reg, s, np.mean(w)
             ss.append(s)
             if s < b:
                 b = s

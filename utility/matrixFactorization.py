@@ -110,6 +110,16 @@ def runRan():
     np.savetxt('../Data/RandomData/S2.csv', S2, delimiter=',')
     np.savetxt('../Data/RandomData/U2.csv', U2, delimiter=',')
 
+    print 'Random Data Z4'
+
+    Z4 = Z0 + Z1
+    K4 = np.dot(Z4, Z4.T)
+    S4, U4 = Factorization(K4)
+
+    np.savetxt('../Data/RandomData/K4.csv', K4, delimiter=',')
+    np.savetxt('../Data/RandomData/S4.csv', S4, delimiter=',')
+    np.savetxt('../Data/RandomData/U4.csv', U4, delimiter=',')
+
 
 if __name__ == '__main__':
     # runEEG()

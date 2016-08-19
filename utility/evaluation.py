@@ -6,7 +6,7 @@ from sklearn.metrics import roc_curve, precision_score, recall_score, f1_score
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import auc
 import numpy as np
-from dataLoader import EEGLoading, GenLoading, GenLoadingCausal
+from dataLoader import EEGLoading, GenLoading, GenLoadingCausal, RanLoadingCausal
 
 def limitPrediction(l, num):
     s = sorted(l)
@@ -59,19 +59,20 @@ def precision_recall(beta_true, beta_pred):
     p, r, f, s = prfs(b_true, b_pred, pos_label=1)
     return p, r
 
-def Roc_curve(beta_true, beta_pred_list, labels, top, nearby,method):
+def Roc_curve(beta_true, beta_pred_list, labels, top, nearby, method):
     from matplotlib import pyplot as plt
     fpr_list = []
     tpr_list = []
-    fig = plt.figure()
+    # fig = plt.figure()
     for i in range(len(beta_pred_list)):
         fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, top=top, nearby=nearby)
-        plt.plot(fpr, tpr, label=labels[i])
+        # plt.plot(fpr, tpr, label=labels[i])
         fpr_list.append(fpr)
         tpr_list.append(tpr)
-    plt.legend()
+    # plt.legend()
     # plt.show()
-    fig.savefig('../pic/ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
+    # fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
+    # plt.close()
     auc_list = []
     for j in range(len(fpr_list)):
         # print auc(fpr_list[j], tpr_list[j])
@@ -137,9 +138,30 @@ def evaluationGen(top, nearby):
             compare_list.append(auc_arr[0])
             compare_list.append(auc_arr[1])
             compare_list.append(auc_arr[2])
-    np.savetxt('../Data/GenEva.csv', auc_list, '%5.4f' ,delimiter=',')
+    # np.savetxt('../Data/GenEva.csv', auc_list, '%5.4f' ,delimiter=',')
     return compare_list
     # np.savetxt('../Data/GenComp.txt', np.asarray(compare_list), delimiter=',',fmt='%s')
+
+def evaluationRan(top, nearby):
+    B = RanLoadingCausal()
+    auc_list = []
+    compare_list = []
+    method = ['linear', 'L1', 'L2']
+    for t in ['ML', 'REML']:
+        for i in range(5):
+            print '-------------------'
+            print 'Confound ', i
+            beta_pred_list = np.loadtxt('../results/RandomDataResult_'+t+'_con_'+str(i+1)+'.csv', delimiter=',')
+            auc = Roc_curve(B, beta_pred_list, method, top, nearby, i)
+            auc_arr = np.asarray(auc)
+            print method[np.argmax(auc_arr)]
+            auc_list.append(auc)
+            compare_list.append(method[np.argmax(auc)])
+            compare_list.append(auc_arr[0])
+            compare_list.append(auc_arr[1])
+            compare_list.append(auc_arr[2])
+    # np.savetxt('../Data/RanEva.csv', auc_list, '%5.4f' ,delimiter=',')
+    return compare_list
 
 
 def evaluationEEG():
@@ -154,11 +176,8 @@ def evaluationEEG():
             for i in range(5):
                 print '------------'
                 print 'Confound', i
-<<<<<<< HEAD
                 y_pred_list = np.loadtxt('../results/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
-=======
                 y_pred_list = np.loadtxt('../results2/EEGResult_'+t+'_label_'+str(k+1)+'_con_'+str(i+1)+'.csv', delimiter=',')
->>>>>>> origin/master
                 y_true = Y[-y_pred_list.shape[1]:, k]
                 print pr_score(y_true, y_pred_list)
                 print method[np.argmax(accuracy(y_true, y_pred_list))]
@@ -170,26 +189,23 @@ def evaluationEEG():
     # np.savetxt('../Data/EEGComp.txt', np.asarray(compare_list), delimiter=',', fmt='%s')
 
 
-
-
-
-if __name__ == '__main__':
+def evaluationGen_chosen():
     full_comp = []
     chosen = [line.strip().split('\t') for line in open('../results/filter.txt')]
     for a, b in chosen:
         i = int(a)
-        j = int(b)
-        full_comp.append([i, j] + evaluationGen(i, j))
-        print i
-    np.savetxt('../Data/GenCompPR_chosen.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
-    # for i in range(400,1100,100):
-    #     for j in range(5000, 105000, 5000):
-    #         full_comp.append([i,j]+evaluationGen(i, j))
-    #         print i
-    # np.savetxt('../Data/GenCompPR.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
+    j = int(b)
+    full_comp.append([i, j] + evaluationGen(i, j))
+    print i
+    np.savetxt('../Data/GenCompPR_chosen.csv', np.asarray(full_comp), delimiter=',', fmt='%s')
 
-    # full_comp = evaluationGen(1000, 50000)
-    # np.savetxt('../Data/GenComp_1000_50000.txt', np.asarray(full_comp), delimiter=',', fmt='%s')
+
+if __name__ == '__main__':
+    full_comp = []
+    for i in range(0,200,20):
+        full_comp.append([i]+evaluationRan(i,1))
+        print i
+        np.savetxt('../Data/RandomDataPR_'+str(i)+'.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
 
     # evaluationEEG()
 
