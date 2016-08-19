@@ -4,7 +4,7 @@ import sys
 
 sys.path.append('../')
 
-from dataLoader import GenLoading, EEGLoading, EEGLoading_KSU, GenLoadingKSU
+from dataLoader import GenLoading, EEGLoading, EEGLoadingKSU, GenLoadingKSU, RanLoading, RanLoadingKSU
 from LMM.lmm_lasso import *
 from LMM.lmm_lassoMulti import *
 from evaluation import precision_recall
@@ -164,10 +164,58 @@ def runGenome(numintervals=100, ldeltamin=-5, ldeltamax=5):
             np.savetxt('../results/genomeResult_ML_con_'+str(4)+'.csv', m, delimiter=',')
 
 
+
+def runRandomData(numintervals=100, ldeltamin=-5, ldeltamax=5):
+    X, Y, Z1, Z2, B = RanLoading(True)
+    for REML in [True, False]:
+        for i in range(5):
+            if i!=3:
+                print 'RandomData', i
+                K, U, S = RanLoadingKSU(i)
+                w_linear, alp, l_linear, clf_linear = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                            ldeltamax=ldeltamax, method='linear', selectK=True, regression=True, S=S, U=U, REML=REML)
+                w_lasso, alp, l_lasso, clf_lasso = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                         ldeltamax=ldeltamax, method='lasso', selectK=True, regression=True, S=S, U=U, REML=REML)
+                w_rd, alp, l_rd, clf_rd = train(X, K, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax,
+                                                method='ridge', selectK=True, regression=True, S=S, U=U, REML=REML)
+                m = []
+                m.append(w_linear)
+                m.append(w_lasso)
+                m.append(w_rd)
+                m = np.array(m)
+                if REML:
+                    np.savetxt('../results/RandomDataResult_REML_con_'+str(i+1)+'.csv', m, delimiter=',')
+                else:
+                    np.savetxt('../results/RandomDataResult_ML_con_'+str(i+1)+'.csv', m, delimiter=',')
+
+        print 'Random 3'
+        K0, U0, S0 = GenLoadingKSU(0)
+        K1, U1, S1 = GenLoadingKSU(1)
+        KList = [K0, K1]
+        UList = [U0, U1]
+        SList = [S0, S1]
+        w_linear, alp, l_linear, clf_linear = trainMulti(X, KList, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                    ldeltamax=ldeltamax, method='linear', selectK=True, regression=True, SList=SList, UList=UList)
+        w_lasso, alp, l_lasso, clf_lasso = trainMulti(X, KList, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin,
+                                                 ldeltamax=ldeltamax, method='lasso', selectK=True, regression=True, SList=SList, UList=UList)
+        w_rd, alp, l_rd, clf_rd = trainMulti(X, KList, Y, mu=0, numintervals=numintervals, ldeltamin=ldeltamin, ldeltamax=ldeltamax,
+                                        method='ridge', selectK=True, regression=True, SList=SList, UList=UList)
+        m = []
+        m.append(w_linear)
+        m.append(w_lasso)
+        m.append(w_rd)
+        m = np.array(m)
+        if REML:
+            np.savetxt('../results/RandomDataResult_REML_con_'+str(4)+'.csv', m, delimiter=',')
+        else:
+            np.savetxt('../results/RandomDataResult_ML_con_'+str(4)+'.csv', m, delimiter=',')
+
+
 if __name__ == '__main__':
     # runGenome(1000, -10, 10)
-    runEEG(1000, -10, 10, 2000, 2)
-    runEEG(1000, -10, 10, 4000, 4)
-    runEEG(1000, -10, 10, 6000, 6)
-    runEEG(1000, -10, 10, 8000, 8)
-    runEEG(1000, -10, 10, 10000, 0)
+    # runEEG(1000, -10, 10, 2000, 2)
+    # runEEG(1000, -10, 10, 4000, 4)
+    # runEEG(1000, -10, 10, 6000, 6)
+    # runEEG(1000, -10, 10, 8000, 8)
+    # runEEG(1000, -10, 10, 10000, 0)
+    runRandomData(1000, -10 , 10)
