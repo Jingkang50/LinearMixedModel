@@ -66,12 +66,13 @@ def Roc_curve(beta_true, beta_pred_list, labels, top, nearby, method):
     fig = plt.figure()
     for i in range(len(beta_pred_list)):
         fpr, tpr = gwas_roc(beta_pred_list[i], beta_true, top=top, nearby=nearby)
+        plt.ylim(0, 1.05)
         plt.plot(fpr, tpr, label=labels[i])
         fpr_list.append(fpr)
         tpr_list.append(tpr)
     plt.legend()
-    plt.show()
-    # fig.savefig('../pic/random_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
+    # plt.show()
+    fig.savefig('../pic/Gen_ROC_'+str(top)+'_'+str(nearby)+'_'+str(method)+'.png' , dpi=fig.dpi)
     plt.close()
     auc_list = []
     for j in range(len(fpr_list)):
@@ -201,12 +202,13 @@ def evaluationGen_chosen():
 
 
 if __name__ == '__main__':
-    full_comp = []
-    for i in range(150,153,20):
-        full_comp.append([i]+evaluationRan(i,1))
-        print i
-        np.savetxt('../Data/RandomDataPR_'+str(i)+'.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
-
+    # full_comp = []
+    # for i in range(150,153,20):
+    #     full_comp.append([i]+evaluationRan(i,1))
+    #     print i
+    #     np.savetxt('../Data/RandomDataPR_'+str(i)+'.csv', np.asarray(full_comp), delimiter=',',fmt='%s')
+    for i in range(15000, 40000, 5000):
+        evaluationGen(1000, i)
     # evaluationEEG()
 
 
